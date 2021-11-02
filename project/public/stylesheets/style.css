@@ -1,8 +1,267 @@
+/******************** css variables ********************/
+
+:root {
+  --mainWhite: #fff;
+  --offWhite: #f7f7f7;
+  --mainBlack: #222;
+  --mainGrey: #ececec;
+  --darkGrey: #afafaf;
+  --darkBlue: #031d44;
+  --mainBlue: #1368aa;
+  --lightBlue: #ade8f4;
+  --mainSpacing: 0.1rem;
+  --mainTransition: all 0.3s linear;
+  --lightShadow: 2px 5px 3px 0 rgba(0, 0, 0, 0.25);
+  --darkShadow: 4px 10px 6px 0 rgba(0, 0, 0, 0.5);
+}
+
+/******************** body ********************/
+
 body {
-  padding: 50px;
-  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+  background: var(--offWhite);
+  color: var(--mainBlack);
+  font-family: "Overpass", sans-serif;
+  font-size: 1rem;
+  letter-spacing: var(--mainSpacing);
+  line-height: 1.4;
+}
+
+/******************** global ********************/
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  letter-spacing: var(--mainSpacing);
+  margin-bottom: 1.25rem;
+}
+
+h1 {
+  font-size: 3.3rem;
+}
+
+h2 {
+  font-size: 2.3rem;
+}
+
+h3 {
+  font-size: 2rem;
+}
+
+h4 {
+  font-size: 1.2rem;
+}
+
+p {
+  margin-bottom: 1.25rem;
+  line-height: 2;
+  font-weight: 300;
 }
 
 a {
-  color: #00B7FF;
+  text-decoration: none;
+}
+
+/******************** header ********************/
+
+.hero {
+  background: linear-gradient(rgba(13, 13, 13, 0.25), rgba(13, 13, 13, 0.75)),
+    url("../images/pexels-andrea-piacquadio-3764537.jpg") center/cover no-repeat
+      fixed;
+  color: var(--offWhite);
+  height: 100vh;
+  text-align: center;
+}
+
+nav {
+  padding: 2.5rem 0;
+  text-align: left;
+  display: flex;
+  justify-content: space-between;
+}
+
+main {
+  padding: 2.5rem 0;
+}
+
+.logo {
+  width: 20vw;
+}
+
+.title {
+  padding: 4rem 0;
+  margin: 0 25vw;
+}
+
+.title h1 {
+  font-size: 5rem;
+  font-weight: 900;
+  /* animation: slideFromRight 5s ease-in-out 1; */
+}
+
+.title h3 {
+  font-weight: 700;
+  /* animation: slideFromLeft 5s ease-in-out 1; */
+}
+
+.btn-container .btn {
+  font-weight: 900;
+  margin: 1.75rem;
+  padding: 0.75rem 1.25rem;
+}
+
+@keyframes slideFromRight {
+  0% {
+    transform: translateX(1000px);
+  }
+
+  50% {
+    transform: translateX(-200px);
+  }
+
+  75% {
+    transform: translateX(50px);
+  }
+
+  100% {
+    transform: translateX(0px);
+  }
+}
+
+@keyframes slideFromLeft {
+  0% {
+    transform: translateX(-1000px);
+  }
+
+  50% {
+    transform: translateX(200px);
+  }
+
+  75% {
+    transform: translateX(-50px);
+  }
+
+  100% {
+    transform: translateX(0px);
+  }
+}
+
+/******************** features section ********************/
+
+.features-section {
+  padding: 3rem;
+  text-align: center;
+}
+
+.features-section .row {
+  padding-top: 2.5rem;
+}
+
+.features-section i {
+  color: var(--mainBlue);
+  padding-bottom: 2rem;
+}
+
+.features-section i:hover {
+  color: var(--darkBlue);
+  transform: scale(1.25, 1.25);
+  transition: var(--mainTransition);
+}
+
+/******************** testimonial section ********************/
+
+.testimonials {
+  background: var(--darkBlue);
+  color: var(--offWhite);
+  padding: 3rem 0;
+  text-align: center;
+}
+
+.testimonial-image {
+  border-radius: 100%;
+  margin: 20px;
+  width: 10%;
+}
+
+.testimonial-text {
+  font-size: 3rem;
+  font-weight: 700;
+  line-height: 1.5;
+}
+
+.carousel-inner {
+  padding: 0 10vw;
+}
+
+.carousel-item {
+  padding: 0 1rem;
+}
+
+/******************** footer section ********************/
+
+footer {
+  color: var(--mainBlue);
+  padding: 3rem 0 1rem 0;
+  text-align: center;
+}
+
+.footer-icon-container {
+  padding-bottom: 1rem;
+}
+
+.footer-icon-container i {
+  color: var(--mainBlue);
+  font-size: 1.25rem;
+  padding: 0.25rem;
+  transition: var(--mainTransition);
+}
+
+.footer-icon-container i:hover {
+  color: var(--darkBlue);
+  transform: scale(1.25, 1.25);
+}
+
+/******************** small screen ********************/
+
+@media screen and (max-width: 768px) {
+  .logo {
+    width: 30vw;
+  }
+
+  .hero {
+    padding-bottom: 3rem;
+  }
+
+  .title {
+    padding: 4rem 0;
+    margin: 0 5vw;
+  }
+
+  .title h1 {
+    font-size: 3rem;
+    font-weight: 700;
+  }
+
+  .title h3 {
+    font-size: 1.5rem;
+    font-weight: 500;
+  }
+
+  main {
+    padding: 1rem;
+  }
+
+  .btn-container .btn {
+    font-weight: 900;
+    margin: 1rem;
+    padding: 0.5rem 1rem;
+  }
+
+  .testimonial-text {
+    font-size: 2rem;
+    font-weight: 500;
+    line-height: 1.4;
+  }
 }

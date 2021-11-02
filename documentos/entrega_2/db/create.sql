@@ -7,9 +7,8 @@ CREATE TABLE IF NOT EXISTS public.users
 (
     usr_id serial NOT NULL,
     usr_name text NOT NULL,
-    usr_email text NOT NULL,
-    usr_salt text NOT NULL,
-    usr_hash text NOT NULL,
+    usr_email text NOT NULL UNIQUE,
+    usr_password text NOT NULL,
     usr_type_id bigint NOT NULL DEFAULT 1,
     usr_country_id bigint NOT NULL DEFAULT 1,
     usr_created_at timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,

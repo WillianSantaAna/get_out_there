@@ -255,19 +255,17 @@ insert into countries (cou_name, cou_flag) values ('Philippines', '🇵🇭');
 insert into countries (cou_name, cou_flag) values ('Pakistan', '🇵🇰');
 insert into countries (cou_name, cou_flag) values ('British Indian Ocean Territory', '🇮🇴');
 
--- insert users
-insert into users (usr_name, usr_email, usr_salt, usr_hash) values ('Felipe', 'felipe@email.com', '123', '123');
-insert into users (usr_name, usr_email, usr_salt, usr_hash) values ('Silva', 'silva@email.com', '123', '123');
-insert into users (usr_name, usr_email, usr_salt, usr_hash) values ('Luis', 'luis@email.com', '123', '123');
-insert into users (usr_name, usr_email, usr_salt, usr_hash) values ('Miguel', 'miguel@email.com', '123', '123');
-insert into users (usr_name, usr_email, usr_salt, usr_hash) values ('Gabriel', 'gabriel@email.com', '123', '123');
-insert into users (usr_name, usr_email, usr_salt, usr_hash) values ('willian', 'willian@email.com', '123', '123');
+
+-- insert users (senhas: 123456)
+insert into users (usr_name, usr_email, usr_password, usr_type_id, usr_country_id) values ('Felipe', 'felipe@email.com', '$2b$10$Be.y7oUVh6xWYTeHX.Nyh.7eJ3hR35gH47VYWH4ERmtFpX1fFVDke', 1, 188);
+insert into users (usr_name, usr_email, usr_password, usr_type_id, usr_country_id) values ('Luis', 'luis@email.com', '$2b$10$YvGa5pWprqtY1Yjr7mcan.G0yq5bT.hCjDbWHXCetDyyy.OBZ8QXa', 1, 188);
+insert into users (usr_name, usr_email, usr_password, usr_type_id, usr_country_id) values ('Willian', 'willian@email.com', '$2b$10$eCFN.ZoLBL2dCgGGVMm49.46IuRhRdjSSQXw9m4AiBFgQEXJY06yO', 1, 188);
 
 -- insert teams
-insert into teams (te_name, te_description, te_admin_id, te_open) values ('Elite Runners', '...', 1, true);
+--insert into teams (te_name, te_description, te_admin_id, te_open) values ('Elite Runners', '...', 1, true);
 
 -- insert team users
-insert into teams_users (tsr_tea_id, tsr_usr_id) values (1, 1);
-insert into teams_users (tsr_tea_id, tsr_usr_id) values (1, 2);
+--insert into teams_users (tsr_tea_id, tsr_usr_id) values (1, 1);
+--insert into teams_users (tsr_tea_id, tsr_usr_id) values (1, 2);
 
 commit;
