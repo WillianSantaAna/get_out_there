@@ -1,15 +1,15 @@
-import setLogo from "./src/setLogo.js";
-import setYear from "./src/setYear.js";
-import setUsername from "./src/setUserName.js";
+import {
+  setLogo,
+  setYear,
+  setUsername,
+  setButtons,
+} from "./src/setElements.js";
 
 window.onload = () => {
   setYear();
   setLogo();
   setUsername();
-
-  if (localStorage.getItem("usr_id")) {
-    $(".btn-container").html("");
-  }
+  setButtons();
 
   $(".logout").click(() => {
     localStorage.removeItem("usr_id");

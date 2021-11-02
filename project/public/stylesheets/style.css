@@ -6,8 +6,8 @@
   --mainBlack: #222;
   --mainGrey: #ececec;
   --darkGrey: #afafaf;
-  --darkBlue: #031d44;
-  --mainBlue: #1368aa;
+  --darkBlue: #084259;
+  --mainBlue: #0081a7;
   --lightBlue: #ade8f4;
   --mainSpacing: 0.1rem;
   --mainTransition: all 0.3s linear;
@@ -64,6 +64,19 @@ a {
   text-decoration: none;
 }
 
+.btn {
+  font-weight: 600;
+}
+
+.btn-outline-primary {
+  color: var(--mainBlue);
+  border-color: var(--mainBlue);
+}
+
+.btn-outline-primary:hover {
+  background-color: #0081a7;
+}
+
 /******************** header ********************/
 
 .hero {
@@ -75,77 +88,25 @@ a {
   text-align: center;
 }
 
-nav {
+nav.container {
   padding: 2.5rem 0;
-  text-align: left;
   display: flex;
   justify-content: space-between;
 }
 
-main {
-  padding: 2.5rem 0;
-}
-
-.logo {
-  width: 20vw;
-}
-
 .title {
   padding: 4rem 0;
-  margin: 0 25vw;
+  width: 70vw;
+  margin: 0 auto;
 }
 
 .title h1 {
   font-size: 5rem;
-  font-weight: 900;
-  /* animation: slideFromRight 5s ease-in-out 1; */
+  font-weight: 700;
 }
 
 .title h3 {
-  font-weight: 700;
-  /* animation: slideFromLeft 5s ease-in-out 1; */
-}
-
-.btn-container .btn {
-  font-weight: 900;
-  margin: 1.75rem;
-  padding: 0.75rem 1.25rem;
-}
-
-@keyframes slideFromRight {
-  0% {
-    transform: translateX(1000px);
-  }
-
-  50% {
-    transform: translateX(-200px);
-  }
-
-  75% {
-    transform: translateX(50px);
-  }
-
-  100% {
-    transform: translateX(0px);
-  }
-}
-
-@keyframes slideFromLeft {
-  0% {
-    transform: translateX(-1000px);
-  }
-
-  50% {
-    transform: translateX(200px);
-  }
-
-  75% {
-    transform: translateX(-50px);
-  }
-
-  100% {
-    transform: translateX(0px);
-  }
+  font-weight: 500;
 }
 
 /******************** features section ********************/
@@ -187,7 +148,7 @@ main {
 
 .testimonial-text {
   font-size: 3rem;
-  font-weight: 700;
+  font-weight: 500;
   line-height: 1.5;
 }
 
@@ -202,8 +163,7 @@ main {
 /******************** footer section ********************/
 
 footer {
-  color: var(--mainBlue);
-  padding: 3rem 0 1rem 0;
+  padding: 2rem 0 1rem 0;
   text-align: center;
 }
 
@@ -225,43 +185,27 @@ footer {
 
 /******************** small screen ********************/
 
-@media screen and (max-width: 768px) {
-  .logo {
-    width: 30vw;
-  }
-
-  .hero {
-    padding-bottom: 3rem;
-  }
-
+@media screen and (max-width: 992px) {
   .title {
-    padding: 4rem 0;
-    margin: 0 5vw;
+    width: 80vw;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .title {
+    width: 90vw;
   }
 
   .title h1 {
     font-size: 3rem;
-    font-weight: 700;
   }
 
   .title h3 {
     font-size: 1.5rem;
-    font-weight: 500;
-  }
-
-  main {
-    padding: 1rem;
-  }
-
-  .btn-container .btn {
-    font-weight: 900;
-    margin: 1rem;
-    padding: 0.5rem 1rem;
   }
 
   .testimonial-text {
     font-size: 2rem;
-    font-weight: 500;
     line-height: 1.4;
   }
 }

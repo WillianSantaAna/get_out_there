@@ -1,6 +1,5 @@
-import setLogo from "./src/setLogo.js";
-import setYear from "./src/setYear.js";
-import userLogin from "./src/userLogin.js";
+import { setLogo, setYear } from "./src/setElements.js";
+import { login } from "./src/apiMethods.js";
 
 window.onload = async () => {
   setYear();
@@ -14,9 +13,7 @@ $(".submit").on("click", async (e) => {
     password: $("#password").val(),
   };
 
-  const result = await userLogin(user);
-
-  console.log(`result`, result);
+  const result = await login(user);
 
   if (result.usr_id) {
     localStorage.setItem("usr_id", result.usr_id);

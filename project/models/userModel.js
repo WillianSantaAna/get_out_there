@@ -15,6 +15,25 @@ module.exports.getAllUsers = async () => {
   }
 };
 
+module.exports.getUser = async (id) => {
+  try {
+    const sql = "SELECT * FROM users WHERE usr_id = $1";
+    let result = await pool.query(sql, [id]);
+
+    if (result.rowCount > 0) {
+      result = result.rows[0];
+      return { status: 200, result };
+    }
+
+    return {
+      status: 404,
+      result: { msg: `User with id ${id} not found` },
+    };
+  } catch (error) {
+    return { status: 500, result: error };
+  }
+};
+
 module.exports.addUser = async (user) => {
   const { name, email, password } = user;
   const type = parseInt(user.type);

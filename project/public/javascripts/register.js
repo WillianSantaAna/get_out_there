@@ -1,8 +1,5 @@
-import setLogo from "./src/setLogo.js";
-import setYear from "./src/setYear.js";
-import postUser from "./src/postUser.js";
-import getUserTypes from "./src/getUserTypes.js";
-import getCountries from "./src/getCountries.js";
+import { setLogo, setYear } from "./src/setElements.js";
+import { getCountries, getUserTypes } from "./src/apiMethods.js";
 
 window.onload = async () => {
   setYear();

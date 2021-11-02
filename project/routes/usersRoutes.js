@@ -8,6 +8,13 @@ router.get("/", async (req, res) => {
   res.status(status).send(result);
 });
 
+router.get("/:id", async (req, res) => {
+  const id = req.params.id;
+  const { status, result } = await userModel.getUser(id);
+
+  res.status(status).send(result);
+});
+
 router.post("/", async (req, res) => {
   const user = req.body;
   const { status, result } = await userModel.addUser(user);
