@@ -35,7 +35,8 @@ function setButtons() {
   if (getLocalStorageUser()) {
     $(".btn-container")
       .html(`<a href="./circuit.html" class="btn btn-lg btn-outline-light m-3 m-md-4">Start Running</a>
-        <a href="./group.html" class="btn btn-lg btn-outline-light m-3 m-md-4">Manage Group</a>`);
+        <a href="./group.html" class="btn btn-lg btn-outline-light m-3 m-md-4">Manage Group</a>
+        <a href="./calendar.html" class="btn btn-lg btn-outline-light m-3 m-md-4">Running Calendar</a>`);
   } else {
     $(".btn-container")
       .html(`<a href="./register.html" class="btn btn-lg btn-outline-light m-3 m-md-4">Register</a>
