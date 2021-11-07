@@ -1,11 +1,10 @@
 #map {
   height: 60vh;
-  width: 90vw;
 }
 
 .btn-container {
   display: flex;
-  justify-content: center;
+  justify-content: space-evenly;
 }
 
 p {

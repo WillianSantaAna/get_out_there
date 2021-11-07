@@ -185,6 +185,12 @@ footer {
 
 /******************** small screen ********************/
 
+@media screen and (max-width: 576px) {
+  nav.container {
+    padding: 2.5rem 0;
+  }
+}
+
 @media screen and (max-width: 992px) {
   .title {
     width: 80vw;
