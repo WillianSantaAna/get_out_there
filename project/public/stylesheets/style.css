@@ -89,7 +89,8 @@ a {
 }
 
 nav.container {
-  padding: 2.5rem 0;
+  padding-top: 2.5rem;
+  padding-bottom: 2.5rem;
   display: flex;
   justify-content: space-between;
 }
@@ -184,12 +185,6 @@ footer {
 }
 
 /******************** small screen ********************/
-
-@media screen and (max-width: 576px) {
-  nav.container {
-    padding: 2.5rem 0;
-  }
-}
 
 @media screen and (max-width: 992px) {
   .title {
