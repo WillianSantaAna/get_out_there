@@ -2,27 +2,37 @@ function setYear() {
   $(".year").html(new Date().getFullYear());
 }
 
-function setUsername() {
-  const userName = localStorage.getItem("usr_name");
+function getLocalStorageUser() {
+  return JSON.parse(localStorage.getItem("user"));
+}
 
-  if (userName) {
-    $(".username").text(userName);
+function setLocalStorageUser(user) {
+  localStorage.setItem("user", JSON.stringify(user));
+}
+
+function removeLocalStorageUser() {
+  localStorage.removeItem("user");
+}
+
+function setNavbar() {
+  if ($(window).width() < 576) {
+    $(".logo").attr("src", "./images/logo/v_754x200_g1.png").width("7rem");
+  } else {
+    $(".logo").attr("src", "./images/logo/h_1800x199_g1.png").width("20rem");
+  }
+
+  const user = getLocalStorageUser();
+
+  if (user) {
+    $(".username").text(user.usr_name);
     $(".username").append(
       `<button type="button" class="btn btn-link logout">Log Out</button>`
     );
   }
 }
 
-function setLogo() {
-  if ($(window).width() < 576) {
-    $(".logo").attr("src", "./images/logo/v_754x200_g1.png").width("7rem");
-  } else {
-    $(".logo").attr("src", "./images/logo/h_1800x199_g1.png").width("20rem");
-  }
-}
-
 function setButtons() {
-  if (localStorage.getItem("usr_id")) {
+  if (getLocalStorageUser()) {
     $(".btn-container")
       .html(`<a href="./circuit.html" class="btn btn-lg btn-outline-light m-3 m-md-4">Start Running</a>
         <a href="./group.html" class="btn btn-lg btn-outline-light m-3 m-md-4">Manage Group</a>`);
@@ -33,4 +43,11 @@ function setButtons() {
   }
 }
 
-export { setYear, setLogo, setUsername, setButtons };
+export {
+  getLocalStorageUser,
+  setLocalStorageUser,
+  removeLocalStorageUser,
+  setYear,
+  setNavbar,
+  setButtons,
+};

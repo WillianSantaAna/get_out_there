@@ -1,9 +1,18 @@
-import { setLogo, setYear } from "./src/setElements.js";
-import { getCountries, getUserTypes } from "./src/apiMethods.js";
+import {
+  getLocalStorageUser,
+  setLocalStorageUser,
+  setNavbar,
+  setYear,
+} from "./src/setElements.js";
+import { getCountries, getUserTypes, createUser } from "./src/apiMethods.js";
 
 window.onload = async () => {
+  if (getLocalStorageUser()) {
+    window.location.replace("/");
+  }
+
   setYear();
-  setLogo();
+  setNavbar();
   const countries = await getCountries();
   const userTypes = await getUserTypes();
 
@@ -41,11 +50,10 @@ $(".submit").on("click", async (e) => {
       country: $(".country").val(),
     };
 
-    const result = await postUser(user);
+    const result = await createUser(user);
 
-    if (result.usr_id) {
-      localStorage.setItem("usr_id", result.usr_id);
-      localStorage.setItem("usr_name", result.usr_name);
+    if (result) {
+      setLocalStorageUser(result);
       window.location.replace("/");
     }
   } catch (error) {
@@ -53,4 +61,4 @@ $(".submit").on("click", async (e) => {
   }
 });
 
-window.addEventListener("resize", setLogo);
+window.addEventListener("resize", setNavbar);

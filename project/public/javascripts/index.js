@@ -1,21 +1,19 @@
 import {
-  setLogo,
   setYear,
-  setUsername,
+  setNavbar,
   setButtons,
+  removeLocalStorageUser,
 } from "./src/setElements.js";
 
 window.onload = () => {
   setYear();
-  setLogo();
-  setUsername();
+  setNavbar();
   setButtons();
 
   $(".logout").click(() => {
-    localStorage.removeItem("usr_id");
-    localStorage.removeItem("usr_name");
+    removeLocalStorageUser();
     window.location.replace("/");
   });
 };
 
-window.addEventListener("resize", setLogo);
+window.addEventListener("resize", setNavbar);

@@ -82,10 +82,13 @@ module.exports.addUser = async (user) => {
 module.exports.login = async (user) => {
   try {
     const { email, password } = user;
-    const sql =
-      "SELECT usr_id, usr_name, usr_password FROM users WHERE usr_email = $1";
+    const sql = `SELECT usr.usr_id, usr.usr_name,usr.usr_password, tsr.tsr_tea_id 
+      FROM users AS usr
+      LEFT JOIN teams_users AS tsr ON usr.usr_id = tsr.tsr_usr_id
+      WHERE usr.usr_email = $1`;
 
     let result = await pool.query(sql, [email]);
+    console.log(result);
 
     if (result.rowCount <= 0) {
       return { status: 400, result: { msg: "Wrong email" } };
@@ -97,11 +100,13 @@ module.exports.login = async (user) => {
 
     if (match) {
       delete result.usr_password;
+
       return { status: 200, result };
     } else {
       return { status: 400, result: { msg: "Wrong password" } };
     }
   } catch (error) {
+    console.log(error);
     return { status: 500, result: error };
   }
 };

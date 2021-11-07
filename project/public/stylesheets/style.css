@@ -80,7 +80,7 @@ a {
 /******************** header ********************/
 
 .hero {
-  background: linear-gradient(rgba(13, 13, 13, 0.25), rgba(13, 13, 13, 0.75)),
+  background: linear-gradient(rgba(13, 13, 13, 0), rgba(13, 13, 13, 1)),
     url("../images/pexels-andrea-piacquadio-3764537.jpg") center/cover no-repeat
       fixed;
   color: var(--offWhite);
