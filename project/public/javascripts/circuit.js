@@ -1,8 +1,4 @@
-import {
-  setYear,
-  setNavbar,
-  removeLocalStorageUser,
-} from "./src/setElements.js";
+import { setNavbarAndFooter } from "./src/setElements.js";
 
 L.mapquest.key = "AvxrKxXdAUzYbKny0oFxLy3v7RjndtkW";
 
@@ -13,18 +9,10 @@ let directions;
 let intervalId;
 
 window.onload = () => {
-  setYear();
-  setNavbar();
-
-  $(".logout").click(() => {
-    removeLocalStorageUser();
-    window.location.replace("/");
-  });
-
+  setNavbarAndFooter();
   createMap();
 };
 
-$(window).on("resize", setNavbar);
 $(".clear").on("click", clearMarker);
 $(".route").on("click", generateRoute);
 $(".save").on("click", saveRoute);

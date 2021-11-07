@@ -1,8 +1,7 @@
 import {
   getLocalStorageUser,
   setLocalStorageUser,
-  setNavbar,
-  setYear,
+  setNavbarAndFooter,
 } from "./src/setElements.js";
 import { login } from "./src/apiMethods.js";
 
@@ -11,8 +10,7 @@ window.onload = () => {
     window.location.replace("/");
   }
 
-  setYear();
-  setNavbar();
+  setNavbarAndFooter();
 };
 
 $(".submit").on("click", async (e) => {
@@ -29,5 +27,3 @@ $(".submit").on("click", async (e) => {
     window.location.replace("/");
   }
 });
-
-window.addEventListener("resize", setNavbar);

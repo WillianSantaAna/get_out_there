@@ -1,8 +1,7 @@
 import {
   getLocalStorageUser,
   setLocalStorageUser,
-  setNavbar,
-  setYear,
+  setNavbarAndFooter,
 } from "./src/setElements.js";
 import { getCountries, getUserTypes, createUser } from "./src/apiMethods.js";
 
@@ -11,8 +10,8 @@ window.onload = async () => {
     window.location.replace("/");
   }
 
-  setYear();
-  setNavbar();
+  setNavbarAndFooter();
+
   const countries = await getCountries();
   const userTypes = await getUserTypes();
 
@@ -60,5 +59,3 @@ $(".submit").on("click", async (e) => {
     console.log(error);
   }
 });
-
-window.addEventListener("resize", setNavbar);
