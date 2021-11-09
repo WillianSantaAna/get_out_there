@@ -66,6 +66,15 @@ CREATE TABLE IF NOT EXISTS public.teams_users
     PRIMARY KEY (tsr_id)
 );
 
+CREATE TABLE IF NOT EXISTS public.circuits
+(
+    cir_id serial NOT NULL,
+    cir_name text NOT NULL,
+    cir_coords path NOT NULL,
+    cir_usr_id bigint NOT NULL,
+    PRIMARY KEY (cir_id)
+);
+
 ALTER TABLE IF EXISTS public.users
     ADD FOREIGN KEY (usr_type_id)
     REFERENCES public.user_types (tp_id) MATCH SIMPLE
@@ -108,6 +117,13 @@ ALTER TABLE IF EXISTS public.teams_users
 
 ALTER TABLE IF EXISTS public.teams_users
     ADD FOREIGN KEY (tsr_usr_id)
+    REFERENCES public.users (usr_id) MATCH SIMPLE
+    ON UPDATE NO ACTION
+    ON DELETE NO ACTION
+    NOT VALID;
+
+ALTER TABLE IF EXISTS public.circuits
+    ADD FOREIGN KEY (cir_usr_id)
     REFERENCES public.users (usr_id) MATCH SIMPLE
     ON UPDATE NO ACTION
     ON DELETE NO ACTION
