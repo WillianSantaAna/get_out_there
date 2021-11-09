@@ -7,6 +7,7 @@ const indexRouter = require("./routes/index");
 const usersRouter = require("./routes/usersRoutes");
 const countriesRouter = require("./routes/countriesRoutes");
 const userTypesRouter = require("./routes/userTypesRoutes");
+const teamsRouter = require("./routes/teamsRoutes")
 
 const app = express();
 
@@ -20,5 +21,6 @@ app.use("/", indexRouter);
 app.use("/api/users", usersRouter);
 app.use("/api/countries", countriesRouter);
 app.use("/api/userTypes", userTypesRouter);
+app.use("/api/teams", teamsRouter);
 
 module.exports = app;
