@@ -1,6 +1,6 @@
 BEGIN;
 
-CREATE TABLE IF NOT EXISTS public.team_invitations
+CREATE TABLE IF NOT EXISTS public.teams_invitations
 (
     inv_id serial NOT NULL,
     inv_te_id bigint NOT NULL,
@@ -19,7 +19,20 @@ CREATE TABLE IF NOT EXISTS public.circuits
     PRIMARY KEY (cir_id)
 );
 
-ALTER TABLE IF EXISTS public.team_invitations
+CREATE TABLE IF NOT EXISTS public.teams_circuits
+(
+    tc_id serial NOT NULL,
+    tc_name text NOT NULL,
+    tc_event_date timestamp without time zone NOT NULL,
+    tc_coords path NOT NULL,
+    tc_team_id bigint NOT NULL,
+    tc_active boolean NOT NULL DEFAULT TRUE,
+    tc_created_at timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (tc_id)
+);
+
+
+ALTER TABLE IF EXISTS public.teams_invitations
     ADD FOREIGN KEY (inv_te_id)
     REFERENCES public.teams (te_id) MATCH SIMPLE
     ON UPDATE NO ACTION
@@ -29,6 +42,13 @@ ALTER TABLE IF EXISTS public.team_invitations
 ALTER TABLE IF EXISTS public.circuits
     ADD FOREIGN KEY (cir_usr_id)
     REFERENCES public.users (usr_id) MATCH SIMPLE
+    ON UPDATE NO ACTION
+    ON DELETE NO ACTION
+    NOT VALID;
+
+ALTER TABLE IF EXISTS public.teams_circuits
+    ADD FOREIGN KEY (tc_team_id)
+    REFERENCES public.teams (te_id) MATCH SIMPLE
     ON UPDATE NO ACTION
     ON DELETE NO ACTION
     NOT VALID;

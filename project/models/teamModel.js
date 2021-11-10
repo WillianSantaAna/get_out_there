@@ -61,6 +61,67 @@ module.exports.addTeam = async (team) => {
   }
 }
 
+module.exports.getCircuits = async (id) => {
+  try {
+    const sql = 'select * from teams_circuits where tc_team_id = 1$';
+
+    let result = await pool.query(sql, [id]);
+    result = result.rows;
+
+    return { status: 200, result };
+  } catch (error) {
+    console.log(error);
+    return { status: 500, result: error };
+  }
+}
+
+module.exports.addCircuit = async (id, circuit) => {
+  try {
+    const { name, date, coords} = circuit;
+    let eventDate = new Date(date).valueOf();
+    let coordinates = `[`;
+
+    coords.forEach(({ lng, lat }, index) => {
+      coordinates += `(${lng}, ${lat})`;
+
+      if (index !== coords.length - 1) {
+        coordinates += `, `;
+      } else {
+        coordinates += `]`;
+      }
+    });
+
+    const sql = 'insert into teams_circuits (tc_name, tc_event_date, tc_coords, tc_team_id) values ($1, $2, $3, $4) returning tc_id';
+
+    let result = await pool.query(sql, [name, eventDate, coordinates, id]);
+
+    result = result.rows[0];
+
+    return { status: 200, result };
+  } catch (error) {
+    console.log(error);
+    return { status: 500, result: error };
+  }
+}
+
+module.exports.updateCircuit = async (id, circuitId, circuit) => {
+  try {
+    const { name, date, active} = circuit;
+    let eventDate = new Date(date).valueOf();
+
+    const sql = 'update teams_circuits set tc_name = $1, tc_event_date = $2, tc_active = $3 where tc_id = $4';
+
+    let result = await pool.query(sql, [name, eventDate, active, circuitId]);
+
+    result = result.rows[0];
+
+    return { status: 200, result };
+  } catch (error) {
+    console.log(error);
+    return { status: 500, result: error };
+  }
+}
+
 module.exports.addInvite = async (team) => {
   try {
     const teamId = team.teamId;
@@ -70,7 +131,7 @@ module.exports.addInvite = async (team) => {
       return { status: 400, result: "Invalid Team ID" };
     }
 
-    const sql = 'insert into team_invitations (inv_te_id, inv_code) values ($1, $2) returning inv_id, inv_code';
+    const sql = 'insert into teams_invitations (inv_te_id, inv_code) values ($1, $2) returning inv_id, inv_code';
 
     let result = await pool.query(sql, [teamId, invitationCode]);
 
@@ -88,8 +149,8 @@ module.exports.joinTeam = async (userId, invitationCode) => {
     if (isNaN(userId)) return { status: 400, result: "Invalid user" };
     else if (invitationCode.length !== 11) return { status: 400, result: "Invalid invitation code" };
 
-    const queryFindInvitationCode = 'select inv_id, inv_te_id, inv_active from team_invitations where inv_code = $1';
-    const queryDeactivateCode = 'update team_invitations set inv_active = false where inv_id = $1';
+    const queryFindInvitationCode = 'select inv_id, inv_te_id, inv_active from teams_invitations where inv_code = $1';
+    const queryDeactivateCode = 'update teams_invitations set inv_active = false where inv_id = $1';
     const queryInsertMember = 'insert into teams_users (tsr_tea_id, tsr_usr_id) values ($1, $2) returning tsr_id';
 
     let invitationResult = await pool.query(queryFindInvitationCode, [invitationCode]);
