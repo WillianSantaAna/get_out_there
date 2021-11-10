@@ -1,4 +1,5 @@
 import { setNavbarAndFooter } from "./src/setElements.js";
+import { getCircuit } from "./src/apiMethods.js";
 
 L.mapquest.key = "AvxrKxXdAUzYbKny0oFxLy3v7RjndtkW";
 
@@ -53,8 +54,11 @@ function saveRoute() {
   localStorage.setItem("route", JSON.stringify(newLocations));
 }
 
-function retrieveRoute() {
-  locations = JSON.parse(localStorage.getItem("route"));
+async function retrieveRoute() {
+  const circuit = await getCircuit(11);
+  locations = circuit.cir_coords;
+
+  generateRoute();
 }
 
 function addMarker(e) {
