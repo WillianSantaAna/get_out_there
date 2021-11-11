@@ -41,13 +41,13 @@
     ></script>
     <!-- styles -->
     <link rel="stylesheet" href="./stylesheets/style.css" />
-    <link rel="stylesheet" href="./stylesheets/calendar.css" />
+    <!--link rel="stylesheet" href="./stylesheets/schedule.css" /-->
     <!-- javascript -->
     <script type="module" src="./javascripts/index.js"></script>
-    <script type="module" src="./javascripts/calendar.js"></script>
-    <!-- fullCalendar -->
+    <script type="module" src="./javascripts/schedule.js"></script>
+    <!-- fullCalendar >
     <link href='https://cdn.jsdelivr.net/npm/fullcalendar@5.10.1/main.min.css' rel='stylesheet' />
-    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@5.10.1/main.min.js'></script>
+    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@5.10.1/main.min.js'></script-->
   </head>
   <body>
     <header class="container-fluid">
@@ -58,8 +58,42 @@
         <span class="username"></span>
       </nav>
     </header>
-    <main>
-      <div id='calendar' class="mx-5"></div>
+    <main class="container py-3">
+      <section>
+        <h3>Schedule a new run</h3>
+        <form>
+
+          <!-- THESE SHOULD BE FROM THE DB -->
+          <div class="form-check-inline mb-3">
+            <label class="form-check-label" for="bikeSelect"> Bike </label>
+            <input class="form-check-input" type="radio" name="modeSelect" id="bikeSelect" value="2">
+          </div>
+          <div class="form-check-inline mb-3">
+            <label class="form-check-label" for="runSelect"> Run </label>
+            <input class="form-check-input" type="radio" name="modeSelect" id="runSelect" value="1">
+          </div>
+
+
+          <div class="mb-3">
+            <label for="datetime">Date and Time:</label>
+            <input type="datetime-local" id="datetime" name="datetime">
+          </div>
+        <div class="form-group mb-3">
+          <label for="circuitSelect">Select circuit</label>
+          <select class="form-control" id="circuitSelect">
+          </select>
+        </div> 
+        <div>
+          <input type="button" id="submit" value="Submit" />
+        </div> 
+        </form>
+      </section>
+      <hr>
+      <section>
+        <h3>Your scheduled runs</h3>
+        <div id="schedule"></div>     
+      </section>
+      <!--div id='calendar' class="mx-5"></div-->
     </main>
     <footer class="container">
       <section class="footer-icon-container">

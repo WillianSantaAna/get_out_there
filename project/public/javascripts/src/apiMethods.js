@@ -19,13 +19,16 @@ async function getUserTypes() {
 }
 
 async function getUserCircuits(id) {
-  const circuits = await $.ajax({
-    url: `/api/users/${id}/circuits`,
-    method: "get",
-    dataType: "json",
-  });
-
-  return circuits;
+  try {
+    const result = await $.ajax({
+      url: `api/users/${id}/circuits`,
+      method: "get",
+      dataType: "json"
+    });
+    return result
+  } catch (error) {
+    return error
+  }
 }
 
 async function getCircuits() {
@@ -96,13 +99,72 @@ async function login(user) {
   }
 }
 
+async function getExerciseTypes() {
+  try {
+    const result = await $.ajax({
+      url: `api/exercises/types`,
+      method: "get",
+      dataType: "json"
+    });
+    return result
+  } catch (error) {
+    return error
+  }
+}
+
+async function getUserSoloExercises(id) {
+  try {
+    const result = await $.ajax({
+      url: `api/users/${id}/solo-exercises`,
+      method: "get",
+      dataType: "json"
+    });
+    return result
+  } catch (error) {
+    return error
+  }
+}
+
+async function getUserTeamExercises(id) {
+  try {
+    const result = await $.ajax({
+      url: `api/users/${id}/team-exercises`,
+      method: "get",
+      dataType: "json"
+    });
+    return result
+  } catch (error) {
+    return error
+  }
+}
+
+async function addUserExercise(userId, exr) {
+  try {
+    const result = await $.ajax({
+      url: `/api/users/${userId}/solo-exercises`,
+      method: "post",
+      data: JSON.stringify(exr),
+      dataType: "json",
+      contentType: "application/json",
+    });
+    return result;
+  } catch (error) {
+    return error;
+  }
+}
+
 export {
   getCountries,
   getUserTypes,
-  getUserCircuits,
   createUser,
   login,
   getCircuits,
   getCircuit,
   addCircuit,
+  getExerciseTypes,
+  getUserCircuits,
+  getUserSoloExercises,
+  getUserTeamExercises,
+  addUserExercise,
 };
+

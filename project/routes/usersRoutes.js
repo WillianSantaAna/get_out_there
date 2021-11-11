@@ -36,4 +36,26 @@ router.get("/:id/circuits", async (req, res) => {
   res.status(status).send(result);
 });
 
+router.get("/:id/solo-exercises", async (req, res) => {
+  let id = req.params.id
+  const { status, result } = await userModel.getUserSoloExercises(id);
+
+  res.status(status).send(result);
+});
+
+router.get("/:id/team-exercises", async (req, res) => {
+  let id = req.params.id
+  const { status, result } = await userModel.getUserTeamExercises(id);
+
+  res.status(status).send(result);
+});
+
+router.post("/:id/solo-exercises", async (req,res) => {
+  let id = req.params.id
+  let exr = req.body;
+  const { status, result } = await userModel.addUserExercise(id, exr);
+
+  res.status(status).send(result);
+});
+
 module.exports = router;

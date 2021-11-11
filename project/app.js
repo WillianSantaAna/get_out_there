@@ -9,6 +9,7 @@ const countriesRouter = require("./routes/countriesRoutes");
 const userTypesRouter = require("./routes/userTypesRoutes");
 const teamsRouter = require("./routes/teamsRoutes");
 const circuitsRouter = require("./routes/circuitsRoutes");
+const exercisesRouter = require("./routes/exercisesRoutes");
 
 const app = express();
 
@@ -24,5 +25,6 @@ app.use("/api/countries", countriesRouter);
 app.use("/api/userTypes", userTypesRouter);
 app.use("/api/teams", teamsRouter);
 app.use("/api/circuits", circuitsRouter);
+app.use("/api/exercises", exercisesRouter);
 
 module.exports = app;

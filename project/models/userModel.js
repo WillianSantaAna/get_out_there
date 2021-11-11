@@ -123,3 +123,71 @@ module.exports.getUserCircuits = async (id) => {
     return { status: 500, result: error };
   }
 };
+
+
+module.exports.getUserSoloExercises = async function (id) {
+  try {
+    const sql = "SELECT * FROM user_exercises WHERE uex_usr_id = $1;";
+    let result = await pool.query(sql, [id]);
+
+    result = result.rows;
+
+    return { status: 200, result: result };
+  } catch (error) {
+    return { status: 500, result: error };
+  }
+};
+
+module.exports.getUserTeamExercises = async function (id) {
+  try {
+    const sql = "SELECT tex_id, tex_date, tex_tea_id, tex_cir_id, tex_ety_id FROM team_exercises INNER JOIN teams_users ON tsr_usr_id = $1 AND tex_tea_id = tsr_tea_id;";
+    let result = await pool.query(sql, [id]);
+
+    result = result.rows;
+
+    return { status: 200, result: result };
+  } catch (error) {
+    return { status: 500, result: error };
+  }
+};
+
+module.exports.addUserExercise = async (userId, exr) => {
+
+  let dt = new Date(exr.datetime);
+  const dtformat = `${dt.getFullYear()}-${dt.getMonth()+1}-${dt.getDate()} ${dt.getHours()}:${dt.getMinutes()}:00`;
+  const uId = parseInt(userId);
+  const cId = parseInt(exr.circuitId);
+  const eId = parseInt(exr.exerciseTypeId);
+  //console.log(dtformat, uId, circuitId, exerciseTypeId);
+
+  if (typeof exr !== "object") {
+    return { status: 400, result: { msg: "Malformed data" } };
+  }
+
+  if (typeof dtformat != "string") {
+    return { status: 400, result: { msg: "Malformed data" } };
+  }
+
+  if (typeof uId != "number" || uId <= 0) {
+    return { status: 400, result: { msg: "Malformed data" } };
+  }
+
+  if (typeof cId != "number" || cId <= 0) {
+    return { status: 400, result: { msg: "Malformed data" } };
+  }
+  
+  if (typeof eId != "number" || eId <= 0) {
+    return { status: 400, result: { msg: "Malformed data" } };
+  }
+
+  try {
+    const sql = `INSERT INTO user_exercises (uex_date, uex_usr_id, uex_cir_id, uex_ety_id) 
+    VALUES (timestamp '${dtformat}', $1, $2, $3);`;
+    let result = await pool.query(sql, [uId, cId, eId]);
+    result = result.rows[0];
+    return { status: 200, result };
+  } catch (error) {
+    console.log(error)
+    return { status: 500, result: error };
+  }
+}
