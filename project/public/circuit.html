@@ -63,11 +63,37 @@
       <section id="map" class="mx-auto"></section>
       <p class="dist-time"></p>
       <section class="btn-container py-3">
+        <button
+          class="btn btn-outline-primary"
+          type="button"
+          data-bs-toggle="offcanvas"
+          data-bs-target="#offcanvasLeft"
+          aria-controls="offcanvasLeft"
+        >
+          My Circuits
+        </button>
         <button class="btn btn-outline-primary clear">Clear</button>
         <button class="btn btn-outline-primary route">Route</button>
-        <button class="btn btn-outline-primary save">Save</button>
-        <button class="btn btn-outline-primary retrieve">Retrieve</button>
+        <button class="btn btn-outline-primary save" disabled>Save</button>
       </section>
+
+      <div
+        class="offcanvas offcanvas-start"
+        tabindex="-1"
+        id="offcanvasLeft"
+        aria-labelledby="offcanvasLeftLabel"
+      >
+        <div class="offcanvas-header">
+          <h5 id="offcanvasLeftLabel">Circuits</h5>
+          <button
+            type="button"
+            class="btn-close text-reset"
+            data-bs-dismiss="offcanvas"
+            aria-label="Close"
+          ></button>
+        </div>
+        <div class="offcanvas-body"></div>
+      </div>
     </main>
     <footer class="container">
       <section class="footer-icon-container">

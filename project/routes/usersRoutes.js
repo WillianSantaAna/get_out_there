@@ -29,4 +29,11 @@ router.post("/login", async (req, res) => {
   res.status(status).send(result);
 });
 
+router.get("/:id/circuits", async (req, res) => {
+  const id = req.params.id;
+  const { status, result } = await userModel.getUserCircuits(id);
+
+  res.status(status).send(result);
+});
+
 module.exports = router;

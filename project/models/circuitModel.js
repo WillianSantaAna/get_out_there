@@ -7,13 +7,6 @@ module.exports.getAllCircuits = async () => {
 
     result = result.rows;
 
-    result = result.map((row) => {
-      let temp = row;
-      temp.cir_coords = parseCoords(temp.cir_coords);
-
-      return temp;
-    });
-
     return { status: 200, result };
   } catch (error) {
     return { status: 500, result: error };
@@ -27,8 +20,6 @@ module.exports.getCircuit = async (id) => {
 
     if (result.rowCount > 0) {
       result = result.rows[0];
-
-      result.cir_coords = parseCoords(result.cir_coords);
 
       return { status: 200, result };
     }
@@ -71,16 +62,3 @@ module.exports.addCircuit = async (circuit) => {
     return { status: 500, result: error };
   }
 };
-
-function parseCoords(coords) {
-  let newCoords = coords.slice(2, coords.length - 2);
-  newCoords = newCoords.split("),(");
-
-  newCoords = newCoords.map((coord) => {
-    let tempCoords = coord.split(",");
-
-    return { lng: parseFloat(tempCoords[0]), lat: parseFloat(tempCoords[1]) };
-  });
-
-  return newCoords;
-}

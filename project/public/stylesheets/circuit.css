@@ -12,3 +12,7 @@ p {
   text-align: center;
   margin: 0;
 }
+
+.offcanvas .btn {
+  display: block;
+}

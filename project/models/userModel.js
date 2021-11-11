@@ -110,3 +110,16 @@ module.exports.login = async (user) => {
     return { status: 500, result: error };
   }
 };
+
+module.exports.getUserCircuits = async (id) => {
+  try {
+    const sql = `SELECT * FROM circuits WHERE cir_usr_id = $1`;
+    let result = await pool.query(sql, [id]);
+
+    result = result.rows;
+
+    return { status: 200, result };
+  } catch (error) {
+    return { status: 500, result: error };
+  }
+};

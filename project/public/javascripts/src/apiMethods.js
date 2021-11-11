@@ -18,6 +18,16 @@ async function getUserTypes() {
   return userTypes;
 }
 
+async function getUserCircuits(id) {
+  const circuits = await $.ajax({
+    url: `/api/users/${id}/circuits`,
+    method: "get",
+    dataType: "json",
+  });
+
+  return circuits;
+}
+
 async function getCircuits() {
   const circuits = await $.ajax({
     url: "/api/circuits",
@@ -89,6 +99,7 @@ async function login(user) {
 export {
   getCountries,
   getUserTypes,
+  getUserCircuits,
   createUser,
   login,
   getCircuits,
