@@ -9,6 +9,7 @@ let layerGroup;
 let directions;
 let intervalId;
 let circuitId;
+let positionWatcherId;
 
 window.onload = () => {
   setNavbarAndFooter();
@@ -19,6 +20,7 @@ window.onload = () => {
 $(".clear").on("click", clearMarker);
 $(".route").on("click", generateRoute);
 $(".save").on("click", saveRoute);
+$(".start").on("click", startRunning);
 
 function clearMarker() {
   locations = [];
@@ -46,6 +48,7 @@ function generateRoute() {
   });
 
   $(".save").prop("disabled", false);
+  $(".start").prop("disabled", false);
   intervalId = setInterval(setDistance, 1000);
 }
 
@@ -137,4 +140,62 @@ async function setUserCircuits() {
 
   $(".offcanvas-body").append(circuitsLinks);
   $(".cir-btn").on("click", retrieveRoute);
+}
+
+function startRunning() {
+  let index = 0;
+  let currMarkers = [];
+
+  positionWatcherId = navigator.geolocation.watchPosition(
+    (pos) => {
+      layerGroup.clearLayers();
+
+      let currLatlng = [
+        parseFloat(pos.coords.latitude.toFixed(6)),
+        parseFloat(pos.coords.longitude.toFixed(6)),
+      ];
+
+      let currCheckPoint = [
+        parseFloat(locations[index].lat.toFixed(6)),
+        parseFloat(locations[index].lng.toFixed(6)),
+      ];
+
+      L.marker(currLatlng, {
+        icon: L.mapquest.icons.marker({
+          primaryColor: "#22407F",
+          secondaryColor: "#3B5998",
+          symbol: `I`,
+        }),
+      }).addTo(layerGroup);
+
+      console.log(`currLatlng`, currLatlng);
+      console.log(`currCheckPoint`, currCheckPoint);
+
+      if (
+        currLatlng[0] === currCheckPoint[0] &&
+        currLatlng[1] === currCheckPoint[1]
+      ) {
+        currCheckPoint.push(currCheckPoint);
+
+        for (let curr of currCheckPoint) {
+          L.marker(curr, {
+            icon: L.mapquest.icons.marker({
+              primaryColor: "#22407F",
+              secondaryColor: "#3B5998",
+              symbol: `X`,
+            }),
+          }).addTo(layerGroup);
+        }
+
+        index++;
+      }
+
+      if (index === locations.length) {
+        $(".dist-time").text(`Concluido!`);
+      }
+    },
+    (error) => {
+      console.log(error);
+    }
+  );
 }
