@@ -4,12 +4,15 @@ import { getCircuit, addCircuit, getUserCircuits } from "./src/apiMethods.js";
 L.mapquest.key = "AvxrKxXdAUzYbKny0oFxLy3v7RjndtkW";
 
 let map;
-let locations = [];
 let layerGroup;
 let directions;
+
+let markers = [];
+
 let intervalId;
-let circuitId;
-let positionWatcherId;
+let watcherId;
+
+let running = false;
 
 window.onload = () => {
   setNavbarAndFooter();
@@ -17,17 +20,23 @@ window.onload = () => {
   setUserCircuits();
 };
 
-$(".clear").on("click", clearMarker);
 $(".route").on("click", generateRoute);
 $(".save").on("click", saveRoute);
 $(".start").on("click", startRunning);
 
 function clearMarker() {
-  locations = [];
+  markers = [];
   layerGroup.clearLayers();
+
   $(".dist-time").text("");
   clearInterval(intervalId);
+  // navigator.geolocation.clearWatch(watcherId);
   $(".save").prop("disabled", true);
+  $(".start").prop("disabled", true);
+
+  $(".route").text("Route");
+  $(".route").off();
+  $(".route").on("click", generateRoute);
 
   if (directions.directionsRequest) {
     map.remove();
@@ -39,17 +48,9 @@ function generateRoute() {
   layerGroup.clearLayers();
   map.off("click");
 
-  directions.route({
-    locations,
-    options: {
-      unit: "k",
-      routeType: "pedestrian",
-    },
-  });
+  let locations = markers;
 
-  $(".save").prop("disabled", false);
-  $(".start").prop("disabled", false);
-  intervalId = setInterval(setDistance, 1000);
+  drawRoute(locations);
 }
 
 async function saveRoute() {
@@ -67,33 +68,62 @@ async function saveRoute() {
 
   let circuit = { name, userId: usr_id, coords: newLocations };
 
-  circuitId = await addCircuit(circuit);
-
-  console.log(circuitId);
+  await addCircuit(circuit);
 
   setUserCircuits();
 }
 
-async function retrieveRoute(e) {
-  const id = e.currentTarget.dataset.id;
+function startRunning() {
+  let index = 0;
+  let locations = directions.directionsLayer.locations.map((loc) => loc.latLng);
+  let achievedCheckPoint = [];
 
-  const circuit = await getCircuit(id);
+  running = true;
 
-  locations = circuit.cir_coords;
+  clearMarker();
+  drawRoute(locations);
 
-  generateRoute();
-}
+  $(".btn-container").html(`<button class="btn btn-outline-primary quit">
+          Quit Running
+        </button>`);
 
-function addMarker(e) {
-  locations.push(e.latlng);
+  $(".quit").on("click", () => window.location.replace("/"));
 
-  L.marker(e.latlng, {
-    icon: L.mapquest.icons.marker({
-      primaryColor: "#22407F",
-      secondaryColor: "#3B5998",
-      symbol: locations.length,
-    }),
-  }).addTo(layerGroup);
+  watcherId = navigator.geolocation.watchPosition((pos) => {
+    layerGroup.clearLayers();
+
+    let currLatLng = [pos.coords.latitude, pos.coords.longitude];
+    let currCheckPoint = [locations[index].lat, locations[index].lng];
+
+    currLatLng = currLatLng.map((x) => x.toFixed(4));
+    currCheckPoint = currCheckPoint.map((x) => x.toFixed(4));
+
+    if (
+      currLatLng[0] === currCheckPoint[0] &&
+      currLatLng[1] === currCheckPoint[1]
+    ) {
+      index++;
+      achievedCheckPoint.push([locations[index].lat, locations[index].lng]);
+      $(".result").append(
+        `<p>currLatLng = ${currLatLng.toString()} currCheckPoint ${currCheckPoint.toString()}</p> ChekPoint!`
+      );
+    } else {
+      $(".result").append(
+        `<p>currLatLng = ${currLatLng.toString()} currCheckPoint ${currCheckPoint.toString()}</p>`
+      );
+    }
+
+    addMarker(currLatLng, "P");
+    achievedCheckPoint.forEach((cp) => addMarker(cp, "X"));
+
+    if (index === locations.length) {
+      navigator.geolocation.clearWatch(watcherId);
+      $(".dist-time").text(`Finished!`);
+    }
+
+    // console.log(`currLatLng fixed`, currLatLng);
+    // console.log(`currCheckPoint fixed`, currCheckPoint);
+  });
 }
 
 function createMap() {
@@ -114,7 +144,7 @@ function createMap() {
 
       layerGroup = L.layerGroup().addTo(map);
 
-      map.on("click", addMarker);
+      map.on("click", mapClick);
     },
     (error) => {
       console.log("can't get position");
@@ -123,10 +153,50 @@ function createMap() {
   );
 }
 
+function drawRoute(locations) {
+  $(".route").text("Clear");
+  $(".route").off();
+  $(".route").on("click", clearMarker);
+
+  directions.route(
+    {
+      locations,
+      options: {
+        unit: "k",
+        routeType: "pedestrian",
+        maxRoutes: 1,
+      },
+    },
+    directionsCallback
+  );
+}
+
+function directionsCallback(error, response) {
+  var directionsLayer = L.mapquest
+    .directionsLayer({
+      directionsResponse: response,
+    })
+    .addTo(map);
+
+  directions.directionsLayer = directionsLayer;
+
+  intervalId = setInterval(setDistance, 1000);
+
+  $(".save").prop("disabled", false);
+  $(".start").prop("disabled", false);
+
+  return map;
+}
+
 function setDistance() {
   if (directions.directionsLayer.primaryRoute) {
     const { distance } = directions.directionsLayer.primaryRoute;
     $(".dist-time").text(`distance: ${parseFloat(distance).toFixed(2)}Km`);
+  }
+
+  if (running && intervalId) {
+    map.off("click");
+    clearInterval(intervalId);
   }
 }
 
@@ -138,64 +208,72 @@ async function setUserCircuits() {
     return `<button class="btn btn-link cir-btn" data-bs-dismiss="offcanvas" data-id=${cir_id}>${cir_name}</button>`;
   });
 
-  $(".offcanvas-body").append(circuitsLinks);
+  $(".offcanvas-body").html(circuitsLinks);
   $(".cir-btn").on("click", retrieveRoute);
 }
 
-function startRunning() {
-  let index = 0;
-  let currMarkers = [];
+async function retrieveRoute(e) {
+  clearMarker();
+  const id = e.currentTarget.dataset.id;
 
-  positionWatcherId = navigator.geolocation.watchPosition(
-    (pos) => {
-      layerGroup.clearLayers();
+  const circuit = await getCircuit(id);
 
-      let currLatlng = [
-        parseFloat(pos.coords.latitude.toFixed(6)),
-        parseFloat(pos.coords.longitude.toFixed(6)),
-      ];
-
-      let currCheckPoint = [
-        parseFloat(locations[index].lat.toFixed(6)),
-        parseFloat(locations[index].lng.toFixed(6)),
-      ];
-
-      L.marker(currLatlng, {
-        icon: L.mapquest.icons.marker({
-          primaryColor: "#22407F",
-          secondaryColor: "#3B5998",
-          symbol: `I`,
-        }),
-      }).addTo(layerGroup);
-
-      console.log(`currLatlng`, currLatlng);
-      console.log(`currCheckPoint`, currCheckPoint);
-
-      if (
-        currLatlng[0] === currCheckPoint[0] &&
-        currLatlng[1] === currCheckPoint[1]
-      ) {
-        currCheckPoint.push(currCheckPoint);
-
-        for (let curr of currCheckPoint) {
-          L.marker(curr, {
-            icon: L.mapquest.icons.marker({
-              primaryColor: "#22407F",
-              secondaryColor: "#3B5998",
-              symbol: `X`,
-            }),
-          }).addTo(layerGroup);
-        }
-
-        index++;
-      }
-
-      if (index === locations.length) {
-        $(".dist-time").text(`Concluido!`);
-      }
-    },
-    (error) => {
-      console.log(error);
-    }
-  );
+  drawRoute(circuit.cir_coords);
 }
+
+function mapClick(e) {
+  let latLng = e.latlng;
+
+  markers.push(latLng);
+
+  addMarker(latLng, markers.length);
+}
+
+function addMarker(location, symbol) {
+  L.marker(location, {
+    icon: L.mapquest.icons.marker({
+      primaryColor: "#22407F",
+      secondaryColor: "#3B5998",
+      symbol,
+    }),
+  }).addTo(layerGroup);
+}
+
+// function startRunning() {
+//   console.log("ToDo");
+//   let index = 0;
+//   let routeLocations = directions.directionsLayer.locations.map(
+//     (loc) => loc.latLng
+//   );
+//   let achievedCheckPoint = [];
+//   clearMarker();
+//   locations = routeLocations;
+//   generateRoute();
+//   clearInterval(intervalId);
+//   positionWatcherId = navigator.geolocation.watchPosition(
+//     (pos) => {
+//       layerGroup.clearLayers();
+//       let currLatLng = [pos.coords.latitude, pos.coords.longitude];
+//       let currCheckPoint = [locations[index].lat, locations[index].lng];
+//       addMarker(currLatLng, "P");
+//       // console.log(`currLatLng`, currLatLng);
+//       // console.log(`currCheckPoint`, currCheckPoint);
+//       if (
+//         currLatLng[0].toFixed(4) === currCheckPoint[0].toFixed(4) &&
+//         currLatLng[1].toFixed(4) === currCheckPoint[1].toFixed(4)
+//       ) {
+//         achievedCheckPoint.push(currCheckPoint);
+//         for (let curr of achievedCheckPoint) {
+//           addMarker(curr, "X");
+//         }
+//         index++;
+//       }
+//       if (index === locations.length) {
+//         $(".dist-time").text(`Concluido!`);
+//       }
+//     },
+//     (error) => {
+//       console.log(error);
+//     }
+//   );
+// }
