@@ -29,14 +29,13 @@ function clearMarker() {
   layerGroup.clearLayers();
 
   $(".dist-time").text("");
-  clearInterval(intervalId);
-  // navigator.geolocation.clearWatch(watcherId);
   $(".save").prop("disabled", true);
   $(".start").prop("disabled", true);
-
   $(".route").text("Route");
   $(".route").off();
   $(".route").on("click", generateRoute);
+
+  clearInterval(intervalId);
 
   if (directions.directionsRequest) {
     map.remove();
@@ -92,37 +91,23 @@ function startRunning() {
   watcherId = navigator.geolocation.watchPosition((pos) => {
     layerGroup.clearLayers();
 
-    let currLatLng = [pos.coords.latitude, pos.coords.longitude];
+    let playerCurrPos = [pos.coords.latitude, pos.coords.longitude];
     let currCheckPoint = [locations[index].lat, locations[index].lng];
 
-    currLatLng = currLatLng.map((x) => x.toFixed(4));
-    currCheckPoint = currCheckPoint.map((x) => x.toFixed(4));
-
-    if (
-      currLatLng[0] === currCheckPoint[0] &&
-      currLatLng[1] === currCheckPoint[1]
-    ) {
+    if (checkPosition(playerCurrPos, currCheckPoint)) {
+      achievedCheckPoint.push(currCheckPoint);
       index++;
-      achievedCheckPoint.push([locations[index].lat, locations[index].lng]);
-      $(".result").append(
-        `<p>currLatLng = ${currLatLng.toString()} currCheckPoint ${currCheckPoint.toString()}</p> ChekPoint!`
-      );
-    } else {
-      $(".result").append(
-        `<p>currLatLng = ${currLatLng.toString()} currCheckPoint ${currCheckPoint.toString()}</p>`
-      );
+
+      $(".result").append(`<p>CheckPoint!</p>`);
     }
 
-    addMarker(currLatLng, "P");
+    addMarker(playerCurrPos, "P");
     achievedCheckPoint.forEach((cp) => addMarker(cp, "X"));
 
     if (index === locations.length) {
       navigator.geolocation.clearWatch(watcherId);
       $(".dist-time").text(`Finished!`);
     }
-
-    // console.log(`currLatLng fixed`, currLatLng);
-    // console.log(`currCheckPoint fixed`, currCheckPoint);
   });
 }
 
@@ -239,41 +224,18 @@ function addMarker(location, symbol) {
   }).addTo(layerGroup);
 }
 
-// function startRunning() {
-//   console.log("ToDo");
-//   let index = 0;
-//   let routeLocations = directions.directionsLayer.locations.map(
-//     (loc) => loc.latLng
-//   );
-//   let achievedCheckPoint = [];
-//   clearMarker();
-//   locations = routeLocations;
-//   generateRoute();
-//   clearInterval(intervalId);
-//   positionWatcherId = navigator.geolocation.watchPosition(
-//     (pos) => {
-//       layerGroup.clearLayers();
-//       let currLatLng = [pos.coords.latitude, pos.coords.longitude];
-//       let currCheckPoint = [locations[index].lat, locations[index].lng];
-//       addMarker(currLatLng, "P");
-//       // console.log(`currLatLng`, currLatLng);
-//       // console.log(`currCheckPoint`, currCheckPoint);
-//       if (
-//         currLatLng[0].toFixed(4) === currCheckPoint[0].toFixed(4) &&
-//         currLatLng[1].toFixed(4) === currCheckPoint[1].toFixed(4)
-//       ) {
-//         achievedCheckPoint.push(currCheckPoint);
-//         for (let curr of achievedCheckPoint) {
-//           addMarker(curr, "X");
-//         }
-//         index++;
-//       }
-//       if (index === locations.length) {
-//         $(".dist-time").text(`Concluido!`);
-//       }
-//     },
-//     (error) => {
-//       console.log(error);
-//     }
-//   );
-// }
+function checkPosition(playerCurrPos, currCheckPoint) {
+  let playerPos = playerCurrPos.map((x) => parseInt(x * 10000));
+  let checkPoint = currCheckPoint.map((x) => parseInt(x * 10000));
+
+  $(".result").append(
+    `<p>playerPos = ${playerPos.toString()} | checkPoint ${checkPoint.toString()}</p>`
+  );
+
+  return (
+    checkPoint[0] - 5 <= playerPos[0] &&
+    checkPoint[0] + 5 >= playerPos[0] &&
+    checkPoint[1] - 5 <= playerPos[1] &&
+    checkPoint[1] + 5 >= playerPos[1]
+  );
+}
