@@ -88,27 +88,31 @@ function startRunning() {
 
   $(".quit").on("click", () => window.location.replace("/"));
 
-  watcherId = navigator.geolocation.watchPosition((pos) => {
-    layerGroup.clearLayers();
+  watcherId = navigator.geolocation.watchPosition(
+    (pos) => {
+      layerGroup.clearLayers();
 
-    let playerCurrPos = [pos.coords.latitude, pos.coords.longitude];
-    let currCheckPoint = [locations[index].lat, locations[index].lng];
+      let playerCurrPos = [pos.coords.latitude, pos.coords.longitude];
+      let currCheckPoint = [locations[index].lat, locations[index].lng];
 
-    if (checkPosition(playerCurrPos, currCheckPoint)) {
-      achievedCheckPoint.push(currCheckPoint);
-      index++;
+      if (checkPosition(playerCurrPos, currCheckPoint)) {
+        achievedCheckPoint.push(currCheckPoint);
+        index++;
 
-      $(".result").append(`<p>CheckPoint!</p>`);
-    }
+        $(".result").append(`<p>CheckPoint!</p>`);
+      }
 
-    addMarker(playerCurrPos, "P");
-    achievedCheckPoint.forEach((cp) => addMarker(cp, "X"));
+      addMarker(playerCurrPos, "P");
+      achievedCheckPoint.forEach((cp) => addMarker(cp, "X"));
 
-    if (index === locations.length) {
-      navigator.geolocation.clearWatch(watcherId);
-      $(".dist-time").text(`Finished!`);
-    }
-  });
+      if (index >= locations.length) {
+        $(".dist-time").text(`Finished!`);
+        navigator.geolocation.clearWatch(watcherId);
+      }
+    },
+    (err) => console.log(err),
+    { enableHighAccuracy: true }
+  );
 }
 
 function createMap() {
@@ -227,15 +231,16 @@ function addMarker(location, symbol) {
 function checkPosition(playerCurrPos, currCheckPoint) {
   let playerPos = playerCurrPos.map((x) => parseInt(x * 10000));
   let checkPoint = currCheckPoint.map((x) => parseInt(x * 10000));
+  const radius = 2;
 
   $(".result").append(
     `<p>playerPos = ${playerPos.toString()} | checkPoint ${checkPoint.toString()}</p>`
   );
 
   return (
-    checkPoint[0] - 5 <= playerPos[0] &&
-    checkPoint[0] + 5 >= playerPos[0] &&
-    checkPoint[1] - 5 <= playerPos[1] &&
-    checkPoint[1] + 5 >= playerPos[1]
+    checkPoint[0] - radius <= playerPos[0] &&
+    checkPoint[0] + radius >= playerPos[0] &&
+    checkPoint[1] - radius <= playerPos[1] &&
+    checkPoint[1] + radius >= playerPos[1]
   );
 }
