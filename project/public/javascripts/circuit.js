@@ -82,6 +82,11 @@ function startRunning() {
   clearMarker();
   drawRoute(locations);
 
+  // temp start
+  $("#radius").prop("disabled", true);
+  $("input[name='decimal-places']").prop("disabled", true);
+  // temp end
+
   $(".btn-container").html(`<button class="btn btn-outline-primary quit">
           Quit Running
         </button>`);
@@ -229,9 +234,13 @@ function addMarker(location, symbol) {
 }
 
 function checkPosition(playerCurrPos, currCheckPoint) {
-  let playerPos = playerCurrPos.map((x) => parseInt(x * 10000));
-  let checkPoint = currCheckPoint.map((x) => parseInt(x * 10000));
-  const radius = 2;
+  // temp start
+  let decimalPlaces = parseInt($("input[name='decimal-places']:checked").val());
+  const radius = parseInt($("#radius").val());
+  // temp end
+
+  let playerPos = playerCurrPos.map((x) => parseInt(x * decimalPlaces));
+  let checkPoint = currCheckPoint.map((x) => parseInt(x * decimalPlaces));
 
   $(".result").append(
     `<p>playerPos = ${playerPos.toString()} | checkPoint ${checkPoint.toString()}</p>`
