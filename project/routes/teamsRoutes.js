@@ -15,6 +15,13 @@ router.get("/:id", async (req, res) => {
   res.status(status).send(result);
 });
 
+router.get("/:id/members", async (req, res) => {
+  const id = req.params.id;
+  const { status, result } = await teamModel.getTeamMembers(id);
+
+  res.status(status).send(result);
+});
+
 router.get("/:id/circuits", async (req, res) => {
   const id = req.params.id;
   const { status, result } = await teamModel.getCircuits(id);
@@ -60,10 +67,10 @@ router.put("/:id/circuits/:circuitId", async (req, res) => {
   res.status(status).send(result);
 });
 
-router.delete("/members/:id/kick", async (req, res) => {
-  const memberId = req.params.id;
-  const team = req.body;
-  const { status, result } = await teamModel.kickMember(memberId, team);
+router.delete("/:id/members/kick", async (req, res) => {
+  const teamId = req.params.id;
+  const memberId = req.body.memberId;
+  const { status, result } = await teamModel.kickMember(teamId, memberId);
 
   res.status(status).send(result);
 });

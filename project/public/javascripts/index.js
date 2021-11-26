@@ -1,6 +1,11 @@
-import { setNavbarAndFooter, setHomePageButtons } from "./src/setElements.js";
+import { setHomePageButtons, removeLocalStorageUser } from "./src/setElements.js";
 
 window.onload = () => {
-  setNavbarAndFooter();
   setHomePageButtons();
+
+  $("#sign-out").on("click", () => {
+    removeLocalStorageUser();
+    window.location.reload();
+  });
+  
 };

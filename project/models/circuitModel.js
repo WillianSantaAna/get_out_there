@@ -36,7 +36,7 @@ module.exports.getCircuit = async (id) => {
 
 module.exports.addCircuit = async (circuit) => {
   try {
-    const { name, userId, coords } = circuit;
+    const { name, coords } = circuit;
     let coordinates = `[`;
 
     coords.forEach(({ lng, lat }, index) => {
@@ -49,10 +49,10 @@ module.exports.addCircuit = async (circuit) => {
       }
     });
 
-    let sql = `INSERT INTO circuits (cir_name, cir_coords, cir_usr_id)
-      VALUES ($1, $2, $3) RETURNING cir_id`;
+    let sql = `INSERT INTO circuits (cir_name, cir_coords)
+      VALUES ($1, $2) RETURNING cir_id`;
 
-    let result = await pool.query(sql, [name, coordinates, userId]);
+    let result = await pool.query(sql, [name, coordinates]);
 
     result = result.rows[0];
 

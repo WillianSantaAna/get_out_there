@@ -82,10 +82,11 @@ module.exports.addUser = async (user) => {
 module.exports.login = async (user) => {
   try {
     const { email, password } = user;
-    const sql = `SELECT usr.usr_id, usr.usr_name,usr.usr_password, tsr.tsr_tea_id 
-      FROM users AS usr
-      LEFT JOIN teams_users AS tsr ON usr.usr_id = tsr.tsr_usr_id
-      WHERE usr.usr_email = $1`;
+    const sql = `SELECT usr.usr_id, usr.usr_name,usr.usr_password, tea_id
+    FROM users AS usr
+    LEFT JOIN team_members AS tme ON usr.usr_id = tme.tme_usr_id AND tme.tme_active = true
+    LEFT JOIN teams AS tea ON usr.usr_id = tea.tea_admin_id OR tme.tme_tea_id = tea.tea_id
+    WHERE usr.usr_email = $1`;
 
     let result = await pool.query(sql, [email]);
     console.log(result);
@@ -128,19 +129,6 @@ module.exports.getUserCircuits = async (id) => {
 module.exports.getUserSoloExercises = async function (id) {
   try {
     const sql = "SELECT * FROM user_exercises WHERE uex_usr_id = $1;";
-    let result = await pool.query(sql, [id]);
-
-    result = result.rows;
-
-    return { status: 200, result: result };
-  } catch (error) {
-    return { status: 500, result: error };
-  }
-};
-
-module.exports.getUserTeamExercises = async function (id) {
-  try {
-    const sql = "SELECT tex_id, tex_date, tex_tea_id, tex_cir_id, tex_ety_id FROM team_exercises INNER JOIN teams_users ON tsr_usr_id = $1 AND tex_tea_id = tsr_tea_id;";
     let result = await pool.query(sql, [id]);
 
     result = result.rows;
