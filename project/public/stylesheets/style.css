@@ -152,6 +152,10 @@ main {
   min-width: 150px;
 }
 
+.mobile-mockup {
+  height: 70vh;
+}
+
 /******************** header ********************/
 
 .hero {
@@ -185,13 +189,13 @@ nav.container {
 .logo {
   display: block;
   content: url('../images/logo/v_754x200_g.png');
-  height: 55px;
+  height: 50px;
 }
 
 .logo-alternative-white {
   display: block;
   content: url('../images/logo/v_754x200_w.png');
-  height: 55px;
+  height: 50px;
 }
 
 nav ul {
