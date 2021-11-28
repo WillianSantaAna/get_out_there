@@ -67,10 +67,9 @@ router.put("/:id/circuits/:circuitId", async (req, res) => {
   res.status(status).send(result);
 });
 
-router.delete("/:id/members/kick", async (req, res) => {
-  const teamId = req.params.id;
-  const memberId = req.body.memberId;
-  const { status, result } = await teamModel.kickMember(teamId, memberId);
+router.put("/:id/members/kick", async (req, res) => {
+  const teamMemberId = req.body.tmeId;
+  const { status, result } = await teamModel.kickMember(teamMemberId);
 
   res.status(status).send(result);
 });

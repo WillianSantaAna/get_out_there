@@ -210,16 +210,16 @@ module.exports.joinTeam = async (userId, invitationCode) => {
   }
 }
 
-module.exports.kickMember = async (teamId, memberId) => {
+module.exports.kickMember = async (id) => {
   try {
-    const sql = 'update team_members set tme_active = false where tme_tea_id = $1 and tme_usr_id = $2 and tme_active = true';
+    const sql = 'update team_members set tme_active = false where tme_id = $1 and tme_active = true';
 
-    let result = await pool.query(sql, [teamId, memberId]);
+    let result = await pool.query(sql, [id]);
     
     if (result.rowCount > 0) {
-      return { status: 200, result: `Member with id ${memberId} was kicked` };
+      return { status: 200, result };
     } else {
-      return { status: 404, result: `Member with id ${memberId} not found` };
+      return { status: 404, result: `Member with team member id ${id} not found` };
     }
   } catch (error) {
     console.log(error);

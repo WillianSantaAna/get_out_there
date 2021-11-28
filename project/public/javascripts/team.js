@@ -8,7 +8,7 @@ window.onload = async () => {
   if (user) {
     if (user.tea_id !== null) {
       $("#team-content").css("display", "block");
-      
+
       try {
         const team = await $.ajax({
           url: `/api/teams/${user.tea_id}`,
@@ -23,7 +23,7 @@ window.onload = async () => {
           $("#btn-member").html(`<a data-bs-toggle="modal" data-bs-target="#invitation-modal"
           class="btn btn-success text-center p-1 d-flex align-items-center align-self-start"><i
             class="las la-plus fs-2"></i></a>`);
-          
+
           $("#btn-add-circuit").html(`<a data-bs-toggle="modal" data-bs-target="#schedule-modal"
           class="btn btn-success text-center p-1 d-flex align-items-center align-self-start"><i
             class="las la-plus fs-2"></i></a>`);
@@ -42,15 +42,14 @@ window.onload = async () => {
         for (let member of members) {
           membersHtml += `<section class="d-flex justify-content-between align-items-center">
             <p class="fw-bold fs-4 mb-0">${member.usr_name}</p>`;
-          
+
           if (team.tea_admin_id === user.usr_id) {
-            membersHtml += `<a class="kick-member" href=""><i class="las la-window-close red fs-3"></i></a>
-              <input class="" type="hidden" value="${member.tme_id}">`
+            membersHtml += `<a class="kick-member" data-id="${member.tme_id}" style="cursor: pointer;"><i class="las la-window-close red fs-3"></i></a>`;            
           }
 
           membersHtml += `</section>`;
         }
-
+        
         $("#team-members").html(membersHtml);
 
         const circuits = await $.ajax({
@@ -72,6 +71,60 @@ window.onload = async () => {
       } catch (error) {
         console.log(error);
       }
+
+      $("#invitation").on("click", async () => {
+
+        try {
+          const result = await $.ajax({
+            url: "/api/teams/members/invite",
+            method: "post",
+            data: JSON.stringify({
+              teamId: user.tea_id
+            }),
+            dataType: "json",
+            contentType: "application/json",
+          });
+
+          $("#code").html(result.inv_code);
+          $("#copy-code").removeAttr("disabled");
+
+        } catch (error) {
+          console.log(error.responseText)
+        }
+      });
+
+      $("#copy-code").on("click", () => {
+        let code = $("#code").text();
+        navigator.clipboard.writeText(code);
+
+        alert(`Copied code ${code} to Clipboard`);
+      });
+
+      $(".kick-member").on("click", async (e)  => {
+        let teamMemberId = e.currentTarget.getAttribute('data-id');
+
+        try {
+          const result = await $.ajax({
+            url: `/api/teams/${user.tea_id}/members/kick`,
+            method: "put",
+            data: JSON.stringify({
+              tmeId: teamMemberId
+            }),
+            dataType: "json",
+            contentType: "application/json",
+          });
+
+          if (result) {
+            window.location.reload();
+          }
+
+          console.log(1)
+          console.log(result)
+
+        } catch (error) {
+          console.log(error.responseText)
+        }
+      });
 
     } else {
       window.location.replace("/joinTeam.html");

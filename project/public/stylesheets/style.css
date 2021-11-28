@@ -21,7 +21,9 @@
 }
 
 /******************** body ********************/
-
+html {
+  height: 100%;
+}
 body {
   background: var(--mainWhite);
   color: var(--mainBlack);
@@ -70,7 +72,7 @@ a {
 }
 
 main {
-  min-height: calc(100vh - 217.8px);
+  min-height: calc(100vh - 212.8px);
 }
 
 .gradient-bg {
