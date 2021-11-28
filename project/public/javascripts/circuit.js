@@ -28,7 +28,7 @@ function clearMarker() {
   markers = [];
   layerGroup.clearLayers();
 
-  $(".dist-time").text("");
+  $(".distance").text("");
   $(".save").prop("disabled", true);
   $(".start").prop("disabled", true);
   $(".route").text("Route");
@@ -44,6 +44,11 @@ function clearMarker() {
 }
 
 function generateRoute() {
+  if (markers.length < 2) {
+    alert("Select at least 2 positions");
+    return;
+  }
+
   layerGroup.clearLayers();
   map.off("click");
 
@@ -82,11 +87,6 @@ function startRunning() {
   clearMarker();
   drawRoute(locations);
 
-  // temp start
-  $("#radius").prop("disabled", true);
-  $("input[name='decimal-places']").prop("disabled", true);
-  // temp end
-
   $(".btn-container").html(`<button class="btn btn-outline-primary quit">
           Quit Running
         </button>`);
@@ -103,15 +103,13 @@ function startRunning() {
       if (checkPosition(playerCurrPos, currCheckPoint)) {
         achievedCheckPoint.push(currCheckPoint);
         index++;
-
-        $(".result").append(`<p>CheckPoint!</p>`);
       }
 
       addMarker(playerCurrPos, "P");
       achievedCheckPoint.forEach((cp) => addMarker(cp, "X"));
 
       if (index >= locations.length) {
-        $(".dist-time").text(`Finished!`);
+        $(".distance").text(`Finished!`);
         navigator.geolocation.clearWatch(watcherId);
       }
     },
@@ -129,7 +127,7 @@ function createMap() {
         .map("map", {
           center: [lat, lng],
           layers: L.mapquest.tileLayer("map"),
-          zoom: 12,
+          zoom: 14,
           scale: "metric",
         })
         .addControl(L.mapquest.locatorControl());
@@ -185,7 +183,7 @@ function directionsCallback(error, response) {
 function setDistance() {
   if (directions.directionsLayer.primaryRoute) {
     const { distance } = directions.directionsLayer.primaryRoute;
-    $(".dist-time").text(`distance: ${parseFloat(distance).toFixed(2)}Km`);
+    $(".distance").text(`distance: ${parseFloat(distance).toFixed(2)}Km`);
   }
 
   if (running && intervalId) {
@@ -226,25 +224,19 @@ function mapClick(e) {
 function addMarker(location, symbol) {
   L.marker(location, {
     icon: L.mapquest.icons.marker({
-      primaryColor: "#22407F",
-      secondaryColor: "#3B5998",
+      primaryColor: "#272637",
+      secondaryColor: "#084259",
       symbol,
     }),
   }).addTo(layerGroup);
 }
 
 function checkPosition(playerCurrPos, currCheckPoint) {
-  // temp start
-  let decimalPlaces = parseInt($("input[name='decimal-places']:checked").val());
-  const radius = parseInt($("#radius").val());
-  // temp end
+  const decimalPlace = 10000;
+  const radius = 1;
 
-  let playerPos = playerCurrPos.map((x) => parseInt(x * decimalPlaces));
-  let checkPoint = currCheckPoint.map((x) => parseInt(x * decimalPlaces));
-
-  $(".result").append(
-    `<p>playerPos = ${playerPos.toString()} | checkPoint ${checkPoint.toString()}</p>`
-  );
+  const playerPos = playerCurrPos.map((x) => parseInt(x * decimalPlace));
+  const checkPoint = currCheckPoint.map((x) => parseInt(x * decimalPlace));
 
   return (
     checkPoint[0] - radius <= playerPos[0] &&

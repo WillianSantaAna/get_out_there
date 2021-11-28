@@ -36,7 +36,6 @@ module.exports.getUser = async (id) => {
 
 module.exports.addUser = async (user) => {
   const { name, email, password } = user;
-  const type = parseInt(user.type);
   const country = parseInt(user.country);
 
   if (typeof user !== "object") {
@@ -55,10 +54,6 @@ module.exports.addUser = async (user) => {
     return { status: 400, result: { msg: "Invalid password" } };
   }
 
-  if (typeof type !== "number" || type <= 0) {
-    return { status: 400, result: { msg: "Invalid user type" } };
-  }
-
   if (typeof country !== "number" || country <= 0) {
     return { status: 400, result: { msg: "Invalid country id" } };
   }
@@ -67,9 +62,9 @@ module.exports.addUser = async (user) => {
     const hash = await bcrypt.hash(password, saltRounds);
 
     const sql = `INSERT INTO users 
-      (usr_name, usr_email, usr_password, usr_type_id, usr_country_id)
-      VALUES ($1, $2, $3, $4, $5) RETURNING usr_id, usr_name`;
-    let result = await pool.query(sql, [name, email, hash, type, country]);
+      (usr_name, usr_email, usr_password, usr_country_id)
+      VALUES ($1, $2, $3, $4) RETURNING usr_id, usr_name`;
+    let result = await pool.query(sql, [name, email, hash, country]);
 
     result = result.rows[0];
 
@@ -125,7 +120,6 @@ module.exports.getUserCircuits = async (id) => {
   }
 };
 
-
 module.exports.getUserSoloExercises = async function (id) {
   try {
     const sql = "SELECT * FROM user_exercises WHERE uex_usr_id = $1;";
@@ -140,9 +134,10 @@ module.exports.getUserSoloExercises = async function (id) {
 };
 
 module.exports.addUserExercise = async (userId, exr) => {
-
   let dt = new Date(exr.datetime);
-  const dtformat = `${dt.getFullYear()}-${dt.getMonth()+1}-${dt.getDate()} ${dt.getHours()}:${dt.getMinutes()}:00`;
+  const dtformat = `${dt.getFullYear()}-${
+    dt.getMonth() + 1
+  }-${dt.getDate()} ${dt.getHours()}:${dt.getMinutes()}:00`;
   const uId = parseInt(userId);
   const cId = parseInt(exr.circuitId);
   const eId = parseInt(exr.exerciseTypeId);
@@ -163,7 +158,7 @@ module.exports.addUserExercise = async (userId, exr) => {
   if (typeof cId != "number" || cId <= 0) {
     return { status: 400, result: { msg: "Malformed data" } };
   }
-  
+
   if (typeof eId != "number" || eId <= 0) {
     return { status: 400, result: { msg: "Malformed data" } };
   }
@@ -175,7 +170,7 @@ module.exports.addUserExercise = async (userId, exr) => {
     result = result.rows[0];
     return { status: 200, result };
   } catch (error) {
-    console.log(error)
+    console.log(error);
     return { status: 500, result: error };
   }
-}
+};
