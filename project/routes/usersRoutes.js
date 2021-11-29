@@ -58,4 +58,14 @@ router.post("/:id/solo-exercises", async (req,res) => {
   res.status(status).send(result);
 });
 
+router.put("/:id/team/:teamId/leave", async (req, res) => {
+  let id = req.params.id
+  let teamId = req.params.teamId
+
+  const { status, result } = await userModel.leaveTeam(id, teamId);
+
+  res.status(status).send(result);
+});
+
+
 module.exports = router;

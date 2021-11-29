@@ -174,3 +174,19 @@ module.exports.addUserExercise = async (userId, exr) => {
     return { status: 500, result: error };
   }
 };
+
+module.exports.leaveTeam = async function (id, teamId) {
+  try {
+    const sql = "update team_members set tme_active = false where tme_usr_id = $1 and tme_tea_id = $2";
+    
+    let result = await pool.query(sql, [id, teamId]);
+
+    if (result.rowCount > 0) {
+      return { status: 200, result };
+    } else {
+      return { status: 404, result: `Member with ${id} and team id ${teamId} not found` };
+    }
+  } catch (error) {
+    return { status: 500, result: error };
+  }
+};

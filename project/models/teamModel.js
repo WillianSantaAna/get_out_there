@@ -21,7 +21,6 @@ module.exports.getTeam = async (id) => {
     id = parseInt(id);
 
     if (typeof id === 'number' && !isNaN(id)) {
-      console.log('null eh numero')
       let result = await pool.query(sql, [id]);
   
       if (result.rowCount > 0) {
@@ -65,7 +64,7 @@ module.exports.getTeamMembers = async (id) => {
 
 module.exports.getCircuits = async (id) => {
   try {
-    const sql = 'select * from team_schedules where tsh_tea_id = $1';
+    const sql = 'select * from team_circuits where tci_tea_id = $1';
 
     let result = await pool.query(sql, [id]);
     result = result.rows;

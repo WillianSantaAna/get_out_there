@@ -28,7 +28,7 @@ window.onload = async () => {
           class="btn btn-success text-center p-1 d-flex align-items-center align-self-start"><i
             class="las la-plus fs-2"></i></a>`);
         } else {
-          $("#btn-member").html(`<a id="quit-team" class="btn btn-danger text-center px-3 py-2 d-flex align-items-center align-self-start">Quit</a>`);
+          $("#btn-member").html(`<a id="leave" class="btn btn-danger text-center px-3 py-2 d-flex align-items-center align-self-start">Leave</a>`);
         }
 
         const members = await $.ajax({
@@ -62,7 +62,7 @@ window.onload = async () => {
 
         for (let circuit of circuits) {
           circuitsHtml += `<section class="d-flex justify-content-between align-items-center">
-            <p class="fw-bold fs-4 mb-0">Cascais 2021-12-05</p>
+            <p class="fw-bold fs-4 mb-0">${circuit.cir_name}</p>
             <a href=""><i class="las la-edit orange fs-3"></i></a>
           </section>`;
         }
@@ -118,8 +118,26 @@ window.onload = async () => {
             window.location.reload();
           }
 
-          console.log(1)
-          console.log(result)
+        } catch (error) {
+          console.log(error.responseText)
+        }
+      });
+
+      $("#leave").on("click", async () => {
+        try {
+          const result = await $.ajax({
+            url: `/api/users/${user.usr_id}/team/${user.tea_id}/leave`,
+            method: "put",
+            data: JSON.stringify({}),
+            dataType: "json",
+            contentType: "application/json",
+          });
+
+          if (result) {
+            user.tea_id = null;
+            setLocalStorageUser(user);
+            window.location.reload();
+          }
 
         } catch (error) {
           console.log(error.responseText)
