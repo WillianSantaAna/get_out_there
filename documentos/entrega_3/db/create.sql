@@ -80,7 +80,7 @@ CREATE TABLE IF NOT EXISTS public.team_circuits
     tci_cir_id bigint NOT NULL,
     tci_tea_id bigint NOT NULL,
     tci_completed boolean NOT NULL DEFAULT false,
-    tci_completed boolean NOT NULL DEFAULT true,
+    tci_active boolean NOT NULL DEFAULT true,
     tci_date timestamp without time zone NOT NULL,
     PRIMARY KEY (tci_id)
 );
