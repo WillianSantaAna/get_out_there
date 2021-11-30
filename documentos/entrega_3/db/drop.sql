@@ -1,2 +1,2 @@
-drop table countries, users, teams, teams_users, invitations, circuits, user_circuits, team_circuits, exercise_types;
+drop table countries, users, teams, teams_users, invitations, circuits, user_circuits, team_circuits;
 commit;

@@ -68,17 +68,9 @@ CREATE TABLE IF NOT EXISTS public.user_circuits
     uci_id serial NOT NULL,
     uci_cir_id bigint NOT NULL,
     uci_usr_id bigint NOT NULL,
-    uci_ety_id bigint NOT NULL,
     uci_completed boolean NOT NULL DEFAULT false,
     uci_date timestamp without time zone NOT NULL,
     PRIMARY KEY (uci_id)
-);
-
-CREATE TABLE IF NOT EXISTS public.exercise_types
-(
-    ety_id serial NOT NULL,
-    ety_name text NOT NULL,
-    PRIMARY KEY (ety_id)
 );
 
 CREATE TABLE IF NOT EXISTS public.team_circuits
@@ -86,7 +78,6 @@ CREATE TABLE IF NOT EXISTS public.team_circuits
     tci_id serial NOT NULL,
     tci_cir_id bigint NOT NULL,
     tci_tea_id bigint NOT NULL,
-    tci_ety_id bigint NOT NULL,
     tci_completed boolean NOT NULL DEFAULT false,
     tci_date timestamp without time zone NOT NULL,
     PRIMARY KEY (tci_id)
@@ -148,14 +139,6 @@ ALTER TABLE IF EXISTS public.user_circuits
     NOT VALID;
 
 
-ALTER TABLE IF EXISTS public.user_circuits
-    ADD FOREIGN KEY (uci_ety_id)
-    REFERENCES public.exercise_types (ety_id) MATCH SIMPLE
-    ON UPDATE NO ACTION
-    ON DELETE NO ACTION
-    NOT VALID;
-
-
 ALTER TABLE IF EXISTS public.team_circuits
     ADD FOREIGN KEY (tci_cir_id)
     REFERENCES public.circuits (cir_id) MATCH SIMPLE
@@ -171,12 +154,5 @@ ALTER TABLE IF EXISTS public.team_circuits
     ON DELETE NO ACTION
     NOT VALID;
 
-
-ALTER TABLE IF EXISTS public.team_circuits
-    ADD FOREIGN KEY (tci_ety_id)
-    REFERENCES public.exercise_types (ety_id) MATCH SIMPLE
-    ON UPDATE NO ACTION
-    ON DELETE NO ACTION
-    NOT VALID;
 
 END;

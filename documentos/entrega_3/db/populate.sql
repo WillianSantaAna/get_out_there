@@ -260,8 +260,4 @@ insert into users (usr_name, usr_email, usr_password, usr_country_id) values ('W
 -- insert teams
 insert into teams (tea_name, tea_description, tea_admin_id) values ('Elite Runners', '...', 3);
 
--- insert exercise_types
-insert into exercise_types (ety_name) values ('Run');
-insert into exercise_types (ety_name) values ('Bike Ride');
-
 commit;
