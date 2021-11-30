@@ -69,6 +69,7 @@ CREATE TABLE IF NOT EXISTS public.user_circuits
     uci_cir_id bigint NOT NULL,
     uci_usr_id bigint NOT NULL,
     uci_completed boolean NOT NULL DEFAULT false,
+    uci_active boolean NOT NULL DEFAULT true,
     uci_date timestamp without time zone NOT NULL,
     PRIMARY KEY (uci_id)
 );
@@ -79,6 +80,7 @@ CREATE TABLE IF NOT EXISTS public.team_circuits
     tci_cir_id bigint NOT NULL,
     tci_tea_id bigint NOT NULL,
     tci_completed boolean NOT NULL DEFAULT false,
+    tci_completed boolean NOT NULL DEFAULT true,
     tci_date timestamp without time zone NOT NULL,
     PRIMARY KEY (tci_id)
 );
