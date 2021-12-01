@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Overpass:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Overpass:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
 /******************** css variables ********************/
 
 :root {
@@ -133,13 +133,13 @@ main {
 
 .dark {
   background-color: var(--mainBlack) !important;
-  color: var(--mainWhite)
+  color: var(--mainWhite);
 }
 
 .card {
   border: transparent;
   border-radius: 1rem;
-  filter: drop-shadow(0 1px 16px rgba(0,0,0,0.2));
+  filter: drop-shadow(0 1px 16px rgba(0, 0, 0, 0.2));
 }
 
 .bold {
@@ -190,13 +190,13 @@ nav.container {
 
 .logo {
   display: block;
-  content: url('../images/logo/v_754x200_g.png');
+  content: url("../images/logo/v_754x200_g.png");
   height: 50px;
 }
 
 .logo-alternative-white {
   display: block;
-  content: url('../images/logo/v_754x200_w.png');
+  content: url("../images/logo/v_754x200_w.png");
   height: 50px;
 }
 
@@ -216,7 +216,6 @@ nav ul a {
   color: var(--offWhite) !important;
   font-size: 18px;
 }
-
 
 .navbar-toggler {
   border: none !important;
@@ -257,8 +256,7 @@ nav ul a {
 
 .testimonials {
   background: linear-gradient(rgba(8, 66, 89, 0.8), rgba(8, 66, 89, 0.8)),
-    url("../images/image78263-2.png") center top/cover no-repeat
-      fixed;
+    url("../images/image78263-2.png") center top/cover no-repeat fixed;
   color: var(--offWhite);
   min-height: 400px;
   padding: 3rem 0;
@@ -292,7 +290,8 @@ footer {
   text-align: center;
 }
 
-footer a, footer p {
+footer a,
+footer p {
   color: var(--mainWhite) !important;
 }
 
@@ -349,11 +348,11 @@ footer p {
 
 @media screen and (min-width: 992px) {
   .logo {
-    content: url('../images/logo/h_1800x199_g.png');
+    content: url("../images/logo/h_1800x199_g.png");
   }
 
   .logo-alternative-white {
-    content: url('../images/logo/h_1800x199_w.png');
+    content: url("../images/logo/h_1800x199_w.png");
   }
 }
 
@@ -365,13 +364,13 @@ footer p {
     align-items: center;
     justify-content: space-around;
   }
-  
+
   nav li {
     list-style-type: none;
     text-align: center;
     margin-left: calc(1rem * 3);
   }
-  
+
   nav ul a {
     display: block;
     color: var(--offWhite);

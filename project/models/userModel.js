@@ -1,5 +1,6 @@
 const pool = require("./connection");
 const bcrypt = require("bcrypt");
+const circuitsModel = require("./circuitModel");
 
 const saltRounds = 10;
 
@@ -77,14 +78,13 @@ module.exports.addUser = async (user) => {
 module.exports.login = async (user) => {
   try {
     const { email, password } = user;
-    const sql = `SELECT usr.usr_id, usr.usr_name,usr.usr_password, tea_id
+    const sql = `SELECT usr.usr_id, usr.usr_name, usr.usr_password, tea_id
     FROM users AS usr
     LEFT JOIN team_members AS tme ON usr.usr_id = tme.tme_usr_id AND tme.tme_active = true
     LEFT JOIN teams AS tea ON usr.usr_id = tea.tea_admin_id OR tme.tme_tea_id = tea.tea_id
     WHERE usr.usr_email = $1`;
 
     let result = await pool.query(sql, [email]);
-    console.log(result);
 
     if (result.rowCount <= 0) {
       return { status: 400, result: { msg: "Wrong email" } };
@@ -94,28 +94,45 @@ module.exports.login = async (user) => {
 
     const match = await bcrypt.compare(password, result.usr_password);
 
-    if (match) {
-      delete result.usr_password;
-
-      return { status: 200, result };
-    } else {
+    if (!match) {
       return { status: 400, result: { msg: "Wrong password" } };
     }
+
+    delete result.usr_password;
+
+    return { status: 200, result };
   } catch (error) {
-    console.log(error);
     return { status: 500, result: error };
   }
 };
 
 module.exports.getUserCircuits = async (id) => {
   try {
-    const sql = `SELECT * FROM circuits WHERE cir_usr_id = $1`;
+    const sql = `SELECT * FROM circuits WHERE cir_id in (SELECT DISTINCT uci_cir_id FROM user_circuits WHERE uci_usr_id = $1);`;
     let result = await pool.query(sql, [id]);
 
     result = result.rows;
 
     return { status: 200, result };
   } catch (error) {
+    console.log(error);
+    return { status: 500, result: error };
+  }
+};
+
+module.exports.addUserCircuit = async (userId, circuit) => {
+  try {
+    const circuitId = await circuitsModel.addCircuit(circuit);
+    const sql = `INSERT INTO user_circuits (uci_cir_id, uci_usr_id, uci_date)
+    VALUES ($1, $2, $3)`;
+
+    const date = `1970-01-01 00:00:00`;
+
+    let result = await pool.query(sql, [circuitId.result.cir_id, userId, date]);
+
+    return { status: 200, result: { msg: "Circuit created" } };
+  } catch (error) {
+    console.log(error);
     return { status: 500, result: error };
   }
 };
@@ -177,14 +194,18 @@ module.exports.addUserExercise = async (userId, exr) => {
 
 module.exports.leaveTeam = async function (id, teamId) {
   try {
-    const sql = "update team_members set tme_active = false where tme_usr_id = $1 and tme_tea_id = $2";
-    
+    const sql =
+      "update team_members set tme_active = false where tme_usr_id = $1 and tme_tea_id = $2";
+
     let result = await pool.query(sql, [id, teamId]);
 
     if (result.rowCount > 0) {
       return { status: 200, result };
     } else {
-      return { status: 404, result: `Member with ${id} and team id ${teamId} not found` };
+      return {
+        status: 404,
+        result: `Member with ${id} and team id ${teamId} not found`,
+      };
     }
   } catch (error) {
     return { status: 500, result: error };

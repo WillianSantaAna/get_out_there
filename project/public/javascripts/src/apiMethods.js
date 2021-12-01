@@ -1,3 +1,5 @@
+import { getLocalStorageUser } from "./setElements.js";
+
 async function getCountries() {
   const countries = await $.ajax({
     url: "/api/countries",
@@ -23,11 +25,11 @@ async function getUserCircuits(id) {
     const result = await $.ajax({
       url: `api/users/${id}/circuits`,
       method: "get",
-      dataType: "json"
+      dataType: "json",
     });
-    return result
+    return result;
   } catch (error) {
-    return error
+    return error;
   }
 }
 
@@ -52,9 +54,11 @@ async function getCircuit(id) {
 }
 
 async function addCircuit(circuit) {
+  const { usr_id } = getLocalStorageUser();
+
   try {
     const result = await $.ajax({
-      url: "/api/circuits",
+      url: `/api/users/${usr_id}/circuits`,
       method: "post",
       data: JSON.stringify(circuit),
       dataType: "json",
@@ -104,11 +108,11 @@ async function getExerciseTypes() {
     const result = await $.ajax({
       url: `api/exercises/types`,
       method: "get",
-      dataType: "json"
+      dataType: "json",
     });
-    return result
+    return result;
   } catch (error) {
-    return error
+    return error;
   }
 }
 
@@ -117,11 +121,11 @@ async function getUserSoloExercises(id) {
     const result = await $.ajax({
       url: `api/users/${id}/solo-exercises`,
       method: "get",
-      dataType: "json"
+      dataType: "json",
     });
-    return result
+    return result;
   } catch (error) {
-    return error
+    return error;
   }
 }
 
@@ -130,11 +134,11 @@ async function getUserTeamExercises(id) {
     const result = await $.ajax({
       url: `api/users/${id}/team-exercises`,
       method: "get",
-      dataType: "json"
+      dataType: "json",
     });
-    return result
+    return result;
   } catch (error) {
-    return error
+    return error;
   }
 }
 
@@ -167,4 +171,3 @@ export {
   getUserTeamExercises,
   addUserExercise,
 };
-

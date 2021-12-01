@@ -36,22 +36,31 @@ router.get("/:id/circuits", async (req, res) => {
   res.status(status).send(result);
 });
 
+router.post("/:id/circuits", async (req, res) => {
+  const id = req.params.id;
+  const circuit = req.body;
+
+  const { status, result } = await userModel.addUserCircuit(id, circuit);
+
+  res.status(status).send(result);
+});
+
 router.get("/:id/solo-exercises", async (req, res) => {
-  let id = req.params.id
+  let id = req.params.id;
   const { status, result } = await userModel.getUserSoloExercises(id);
 
   res.status(status).send(result);
 });
 
 router.get("/:id/team-exercises", async (req, res) => {
-  let id = req.params.id
+  let id = req.params.id;
   const { status, result } = await userModel.getUserTeamExercises(id);
 
   res.status(status).send(result);
 });
 
-router.post("/:id/solo-exercises", async (req,res) => {
-  let id = req.params.id
+router.post("/:id/solo-exercises", async (req, res) => {
+  let id = req.params.id;
   let exr = req.body;
   const { status, result } = await userModel.addUserExercise(id, exr);
 
@@ -59,13 +68,12 @@ router.post("/:id/solo-exercises", async (req,res) => {
 });
 
 router.put("/:id/team/:teamId/leave", async (req, res) => {
-  let id = req.params.id
-  let teamId = req.params.teamId
+  let id = req.params.id;
+  let teamId = req.params.teamId;
 
   const { status, result } = await userModel.leaveTeam(id, teamId);
 
   res.status(status).send(result);
 });
-
 
 module.exports = router;
