@@ -34,6 +34,7 @@ module.exports.getCircuit = async (id) => {
   }
 };
 
+// BUGGY; no user_circuits entry added
 module.exports.addCircuit = async (circuit) => {
   try {
     const { name, coords } = circuit;

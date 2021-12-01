@@ -51,6 +51,7 @@ async function getCircuit(id) {
   return circuit;
 }
 
+// BUGGY
 async function addCircuit(circuit) {
   try {
     const result = await $.ajax({
@@ -99,10 +100,10 @@ async function login(user) {
   }
 }
 
-async function getExerciseTypes() {
+async function getUserScheduledCircuits(id) {
   try {
     const result = await $.ajax({
-      url: `api/exercises/types`,
+      url: `api/users/${id}/schedule`,
       method: "get",
       dataType: "json"
     });
@@ -112,38 +113,14 @@ async function getExerciseTypes() {
   }
 }
 
-async function getUserSoloExercises(id) {
-  try {
-    const result = await $.ajax({
-      url: `api/users/${id}/solo-exercises`,
-      method: "get",
-      dataType: "json"
-    });
-    return result
-  } catch (error) {
-    return error
-  }
-}
+// HERE -----
 
-async function getUserTeamExercises(id) {
+async function addUserScheduledCircuit(userId, data) {
   try {
     const result = await $.ajax({
-      url: `api/users/${id}/team-exercises`,
-      method: "get",
-      dataType: "json"
-    });
-    return result
-  } catch (error) {
-    return error
-  }
-}
-
-async function addUserExercise(userId, exr) {
-  try {
-    const result = await $.ajax({
-      url: `/api/users/${userId}/solo-exercises`,
+      url: `/api/users/${userId}/schedule`,
       method: "post",
-      data: JSON.stringify(exr),
+      data: JSON.stringify(data),
       dataType: "json",
       contentType: "application/json",
     });
@@ -161,10 +138,9 @@ export {
   getCircuits,
   getCircuit,
   addCircuit,
-  getExerciseTypes,
   getUserCircuits,
-  getUserSoloExercises,
-  getUserTeamExercises,
-  addUserExercise,
+  getUserScheduledCircuits,
+  addUserScheduledCircuit,
 };
 
+// HERE -----

@@ -107,22 +107,10 @@ module.exports.login = async (user) => {
   }
 };
 
-module.exports.getUserCircuits = async (id) => {
+
+module.exports.getUserCircuits = async function (id) {
   try {
-    const sql = `SELECT * FROM circuits WHERE cir_usr_id = $1`;
-    let result = await pool.query(sql, [id]);
-
-    result = result.rows;
-
-    return { status: 200, result };
-  } catch (error) {
-    return { status: 500, result: error };
-  }
-};
-
-module.exports.getUserSoloExercises = async function (id) {
-  try {
-    const sql = "SELECT * FROM user_exercises WHERE uex_usr_id = $1;";
+    const sql = "SELECT * FROM circuits WHERE cir_id in (SELECT DISTINCT uci_cir_id FROM user_circuits WHERE uci_usr_id = $1);";
     let result = await pool.query(sql, [id]);
 
     result = result.rows;
@@ -133,19 +121,26 @@ module.exports.getUserSoloExercises = async function (id) {
   }
 };
 
-module.exports.addUserExercise = async (userId, exr) => {
-  let dt = new Date(exr.datetime);
-  const dtformat = `${dt.getFullYear()}-${
-    dt.getMonth() + 1
-  }-${dt.getDate()} ${dt.getHours()}:${dt.getMinutes()}:00`;
-  const uId = parseInt(userId);
-  const cId = parseInt(exr.circuitId);
-  const eId = parseInt(exr.exerciseTypeId);
-  //console.log(dtformat, uId, circuitId, exerciseTypeId);
+// HERE -----
 
-  if (typeof exr !== "object") {
-    return { status: 400, result: { msg: "Malformed data" } };
+module.exports.getScheduledCircuits = async function (id) {
+  try {
+    const sql = "SELECT * FROM user_circuits WHERE uci_usr_id = $1 ORDER BY uci_date ASC OFFSET 1 ROW;";
+    let result = await pool.query(sql, [id]);
+
+    result = result.rows;
+
+    return { status: 200, result: result };
+  } catch (error) {
+    return { status: 500, result: error };
   }
+};
+
+module.exports.addScheduledCircuit = async function (id, data) {
+  let dt = new Date(data.datetime);
+  const dtformat = `${dt.getFullYear()}-${dt.getMonth() + 1}-${dt.getDate()} ${dt.getHours()}:${dt.getMinutes()}:00`;
+  const cId = parseInt(data.circuitId);
+  const uId = parseInt(id);
 
   if (typeof dtformat != "string") {
     return { status: 400, result: { msg: "Malformed data" } };
@@ -159,26 +154,23 @@ module.exports.addUserExercise = async (userId, exr) => {
     return { status: 400, result: { msg: "Malformed data" } };
   }
 
-  if (typeof eId != "number" || eId <= 0) {
-    return { status: 400, result: { msg: "Malformed data" } };
-  }
-
-  try {
-    const sql = `INSERT INTO user_exercises (uex_date, uex_usr_id, uex_cir_id, uex_ety_id) 
-    VALUES (timestamp '${dtformat}', $1, $2, $3);`;
-    let result = await pool.query(sql, [uId, cId, eId]);
+  try {  
+    const sql = `INSERT INTO user_circuits(uci_cir_id, uci_usr_id, uci_date) VALUES ($1, $2, timestamp '${dtformat}');`;
+    let result = await pool.query(sql, [cId, uId]);
     result = result.rows[0];
-    return { status: 200, result };
+    return { status: 200, result: result };
   } catch (error) {
     console.log(error);
     return { status: 500, result: error };
   }
 };
 
+// HERE -----
+
 module.exports.leaveTeam = async function (id, teamId) {
   try {
     const sql = "update team_members set tme_active = false where tme_usr_id = $1 and tme_tea_id = $2";
-    
+
     let result = await pool.query(sql, [id, teamId]);
 
     if (result.rowCount > 0) {

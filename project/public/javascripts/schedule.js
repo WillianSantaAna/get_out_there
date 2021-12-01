@@ -4,14 +4,14 @@ import {
 } from "./src/setElements.js";
 
 import {
-  getExerciseTypes,
+  getCircuit,
   getUserCircuits,
-  getUserSoloExercises,
-  getUserTeamExercises,
-  addUserExercise,
-} from "./src/apiMethods.js"; 
+  getUserScheduledCircuits,
+  //getUserTeamExercises,
+  addUserScheduledCircuit,
+} from "./src/apiMethods.js";
 
-window.onload = async function() {
+window.onload = async function () {
   let id = getLocalStorageUser().usr_id;
   setNavbarAndFooter();
   document.querySelector('#submit').onclick = submit;
@@ -30,72 +30,45 @@ async function fillCircuitSelect(id) {
 }
 
 async function showExercises(id) {
-  let exerciseTypes = await getExerciseTypes();
-  let soloExercises = await getUserSoloExercises(id);
-  let teamExercises = await getUserTeamExercises(id);
+  const schCircuits = await getUserScheduledCircuits(id);
+  //let teamExercises = await getUserTeamExercises(id);
 
-  let html = '<div class="row">';
-  for (let e of soloExercises) {
-    for (let ety of exerciseTypes) {
-      if (e.uex_ety_id == ety.ety_id) {
-        let dt = new Date(e.uex_date)
-        html += 
-        `<div class="col-sm-6 mb-3">
-          <div class="card">
-            <div class="card-body">
-              <h5 class="card-title">Solo ${ety.ety_name}</h5>
+  let html = '<section class="row">';
+  for (let s of schCircuits) {
+    let dt = new Date(s.uci_date)
+    const cir = await getCircuit(s.uci_cir_id);
+    const cir_name = cir.cir_name;
+    html +=
+      `<section class="col-sm-6 mb-3">
+          <section class="card">
+            <section class="card-body">
+              <p class="card-text">${cir_name}</p>
               <p class="card-text">Scheduled for ${dt.toUTCString()}</p>
               <a href="#" class="btn btn-primary">View circuit</a>
-            </div>
-          </div>
-        </div>`;
-        break;
-      }
-    }
+            </section>
+          </section>
+        </section>`;
   }
 
-  for (let e of teamExercises) {
-    for (let ety of exerciseTypes) {
-      if (e.tex_ety_id == ety.ety_id) {
-        let dt = new Date(e.tex_date)
-        html += 
-        `<div class="col-sm-6 mb-3">
-          <div class="card">
-            <div class="card-body">
-              <h5 class="card-title">Team ${ety.ety_name}</h5>
-              <p class="card-text">Scheduled for ${dt.toUTCString()}</p>
-              <a href="#" class="btn btn-primary">View circuit</a>
-            </div>
-          </div>
-        </div>`;
-        break;
-      }
-    }
-  }
-  html += '</div>';
+  html += '</section>';
   document.querySelector("#schedule").innerHTML = html;
 }
 
 async function submit() {
-
   let datetime = document.getElementById("datetime").value;
-  let circuit = document.getElementById("circuitSelect").value;
-  let modes = document.getElementsByName("modeSelect");
-  let mode;
-  for (let m of modes) if (m.checked) mode = m.value;
+  let circuit_id = document.getElementById("circuitSelect").value;
 
-  if (!datetime || !circuit || !mode) {
+  if (!datetime || !circuit_id) {
     alert("Please fill out form completely before submitting");
   } else {
-    let data = { 
-      datetime: datetime, 
-      circuitId: circuit,
-      exerciseTypeId: mode, 
+    let data = {
+      datetime: datetime,
+      circuitId: circuit_id
     }
     let userId = getLocalStorageUser().usr_id;
-  
+
     try {
-      await addUserExercise(userId, data);
+      await addUserScheduledCircuit(userId, data);
     } catch (error) {
       console.log(error);
     }

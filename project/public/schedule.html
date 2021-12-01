@@ -62,38 +62,26 @@
       <section>
         <h3>Schedule a new run</h3>
         <form>
-
-          <!-- THESE SHOULD BE FROM THE DB -->
-          <div class="form-check-inline mb-3">
-            <label class="form-check-label" for="bikeSelect"> Bike </label>
-            <input class="form-check-input" type="radio" name="modeSelect" id="bikeSelect" value="2">
-          </div>
-          <div class="form-check-inline mb-3">
-            <label class="form-check-label" for="runSelect"> Run </label>
-            <input class="form-check-input" type="radio" name="modeSelect" id="runSelect" value="1">
-          </div>
-
-
-          <div class="mb-3">
+          <section class="mb-3">
             <label for="datetime">Date and Time:</label>
             <input type="datetime-local" id="datetime" name="datetime">
-          </div>
-        <div class="form-group mb-3">
+          </section>
+        <section class="form-group mb-3">
           <label for="circuitSelect">Select circuit</label>
           <select class="form-control" id="circuitSelect">
           </select>
-        </div> 
-        <div>
+        </section> 
+        <section>
           <input type="button" id="submit" value="Submit" />
-        </div> 
+        </section> 
         </form>
       </section>
       <hr>
       <section>
         <h3>Your scheduled runs</h3>
-        <div id="schedule"></div>     
+        <section id="schedule"></section>     
       </section>
-      <!--div id='calendar' class="mx-5"></div-->
+      <!--section id='calendar' class="mx-5"></section-->
     </main>
     <footer class="container">
       <section class="footer-icon-container">

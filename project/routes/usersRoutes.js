@@ -36,27 +36,25 @@ router.get("/:id/circuits", async (req, res) => {
   res.status(status).send(result);
 });
 
-router.get("/:id/solo-exercises", async (req, res) => {
+
+// HERE -----
+
+router.get("/:id/schedule", async (req, res) => {
   let id = req.params.id
-  const { status, result } = await userModel.getUserSoloExercises(id);
+  const { status, result } = await userModel.getScheduledCircuits(id);
 
   res.status(status).send(result);
 });
 
-router.get("/:id/team-exercises", async (req, res) => {
+router.post("/:id/schedule", async (req,res) => {
   let id = req.params.id
-  const { status, result } = await userModel.getUserTeamExercises(id);
+  let data = req.body;
+  const { status, result } = await userModel.addScheduledCircuit(id, data);
 
   res.status(status).send(result);
 });
 
-router.post("/:id/solo-exercises", async (req,res) => {
-  let id = req.params.id
-  let exr = req.body;
-  const { status, result } = await userModel.addUserExercise(id, exr);
-
-  res.status(status).send(result);
-});
+// HERE END -----
 
 router.put("/:id/team/:teamId/leave", async (req, res) => {
   let id = req.params.id
