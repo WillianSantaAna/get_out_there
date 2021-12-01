@@ -1,5 +1,13 @@
-import { getLocalStorageUser, setNavbarAndFooter } from "./src/setElements.js";
+import {
+  getLocalStorageUser,
+  setNavbarAndFooter,
+  removeLocalStorageUser,
+} from "./src/setElements.js";
 import { getCircuit, addCircuit, getUserCircuits } from "./src/apiMethods.js";
+
+$("#sign-out").on("click", () => {
+  removeLocalStorageUser();
+});
 
 L.mapquest.key = "AvxrKxXdAUzYbKny0oFxLy3v7RjndtkW";
 
@@ -14,26 +22,28 @@ let watcherId;
 
 let running = false;
 
+$(".clear").on("click", clearMarker);
+$(".route").on("click", generateRoute);
+$(".save").on("click", saveRoute);
+$(".start").on("click", startRunning);
+
 window.onload = () => {
   setNavbarAndFooter();
   createMap();
   setUserCircuits();
-};
 
-$(".route").on("click", generateRoute);
-$(".save").on("click", saveRoute);
-$(".start").on("click", startRunning);
+  $(".save").hide();
+  $(".start").hide();
+};
 
 function clearMarker() {
   markers = [];
   layerGroup.clearLayers();
 
   $(".distance").text("");
-  $(".save").prop("disabled", true);
-  $(".start").prop("disabled", true);
-  $(".route").text("Route");
-  $(".route").off();
-  $(".route").on("click", generateRoute);
+  $(".save").hide();
+  $(".start").hide();
+  $(".route").show();
 
   clearInterval(intervalId);
 
@@ -62,15 +72,13 @@ async function saveRoute() {
     (loc) => loc.latLng
   );
 
-  const { usr_id } = getLocalStorageUser();
-
   const date = new Date();
 
   const name = `Circuit ${date.getDate()}/${
     date.getMonth() + 1
   } - ${date.getHours()}:${date.getMinutes()}`;
 
-  let circuit = { name, userId: usr_id, coords: newLocations };
+  let circuit = { name, coords: newLocations };
 
   await addCircuit(circuit);
 
@@ -146,10 +154,6 @@ function createMap() {
 }
 
 function drawRoute(locations) {
-  $(".route").text("Clear");
-  $(".route").off();
-  $(".route").on("click", clearMarker);
-
   directions.route(
     {
       locations,
@@ -174,8 +178,9 @@ function directionsCallback(error, response) {
 
   intervalId = setInterval(setDistance, 1000);
 
-  $(".save").prop("disabled", false);
-  $(".start").prop("disabled", false);
+  $(".save").show();
+  $(".start").show();
+  $(".route").hide();
 
   return map;
 }

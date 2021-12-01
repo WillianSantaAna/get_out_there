@@ -1,3 +1,5 @@
+import { getLocalStorageUser } from "./setElements.js";
+
 async function getCountries() {
   const countries = await $.ajax({
     url: "/api/countries",
@@ -23,11 +25,11 @@ async function getUserCircuits(id) {
     const result = await $.ajax({
       url: `api/users/${id}/circuits`,
       method: "get",
-      dataType: "json"
+      dataType: "json",
     });
-    return result
+    return result;
   } catch (error) {
-    return error
+    return error;
   }
 }
 
@@ -53,9 +55,11 @@ async function getCircuit(id) {
 
 // BUGGY
 async function addCircuit(circuit) {
+  const { usr_id } = getLocalStorageUser();
+
   try {
     const result = await $.ajax({
-      url: "/api/circuits",
+      url: `/api/users/${usr_id}/circuits`,
       method: "post",
       data: JSON.stringify(circuit),
       dataType: "json",
@@ -105,11 +109,11 @@ async function getUserScheduledCircuits(id) {
     const result = await $.ajax({
       url: `api/users/${id}/schedule`,
       method: "get",
-      dataType: "json"
+      dataType: "json",
     });
-    return result
+    return result;
   } catch (error) {
-    return error
+    return error;
   }
 }
 
