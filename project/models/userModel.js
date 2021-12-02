@@ -138,11 +138,9 @@ module.exports.addUserCircuit = async (userId, circuit) => {
   }
 };
 
-// HERE -----
-
 module.exports.getScheduledCircuits = async function (id) {
   try {
-    const sql = "SELECT * FROM user_circuits WHERE uci_usr_id = $1 ORDER BY uci_date ASC OFFSET 1 ROW;";
+    const sql = "SELECT * FROM user_circuits WHERE uci_usr_id = $1 AND uci_completed = false AND uci_active = true AND uci_date != '1970-01-01 00:00:00' ORDER BY uci_date ASC;";
     let result = await pool.query(sql, [id]);
 
     result = result.rows;
@@ -156,33 +154,32 @@ module.exports.getScheduledCircuits = async function (id) {
 module.exports.addScheduledCircuit = async function (id, data) {
   let dt = new Date(data.datetime);
   const dtformat = `${dt.getFullYear()}-${dt.getMonth() + 1}-${dt.getDate()} ${dt.getHours()}:${dt.getMinutes()}:00`;
-  const cId = parseInt(data.circuitId);
-  const uId = parseInt(id);
+  const cid = parseInt(data.circuit_id);
+  const uid = parseInt(id);
 
   if (typeof dtformat != "string") {
     return { status: 400, result: { msg: "Malformed data" } };
   }
 
-  if (typeof uId != "number" || uId <= 0) {
+  if (typeof uid != "number" || uid <= 0) {
     return { status: 400, result: { msg: "Malformed data" } };
   }
 
-  if (typeof cId != "number" || cId <= 0) {
+  if (typeof cid != "number" || cid <= 0) {
     return { status: 400, result: { msg: "Malformed data" } };
   }
 
   try {  
     const sql = `INSERT INTO user_circuits(uci_cir_id, uci_usr_id, uci_date) VALUES ($1, $2, timestamp '${dtformat}');`;
-    let result = await pool.query(sql, [cId, uId]);
-    result = result.rows[0];
+    let res = await pool.query(sql, [cid, uid]);
+    result = res.rows[0];
+    
     return { status: 200, result: result };
   } catch (error) {
     console.log(error);
     return { status: 500, result: error };
   }
 };
-
-// HERE -----
 
 module.exports.leaveTeam = async function (id, teamId) {
   try {

@@ -53,7 +53,6 @@ async function getCircuit(id) {
   return circuit;
 }
 
-// BUGGY
 async function addCircuit(circuit) {
   const { usr_id } = getLocalStorageUser();
 
@@ -104,10 +103,27 @@ async function login(user) {
   }
 }
 
-async function getUserScheduledCircuits(id) {
+async function getUserTeamCircuits() {
+  const user = getLocalStorageUser();
+  if (user.tea_id != null) {
+    try {
+      const result = await $.ajax({
+        url: `/api/teams/${user.tea_id}/circuits`,
+        method: "get",
+        dataType: "json",
+      });
+      return result;
+    } catch (error) {
+      return error;
+    }
+  }
+}
+
+async function getUserScheduledCircuits() {
+  const user = getLocalStorageUser();
   try {
     const result = await $.ajax({
-      url: `api/users/${id}/schedule`,
+      url: `api/users/${user.usr_id}/schedule`,
       method: "get",
       dataType: "json",
     });
@@ -117,12 +133,11 @@ async function getUserScheduledCircuits(id) {
   }
 }
 
-// HERE -----
-
-async function addUserScheduledCircuit(userId, data) {
+async function addUserScheduledCircuit(data) {
+  const user = getLocalStorageUser();
   try {
     const result = await $.ajax({
-      url: `/api/users/${userId}/schedule`,
+      url: `/api/users/${user.usr_id}/schedule`,
       method: "post",
       data: JSON.stringify(data),
       dataType: "json",
@@ -144,7 +159,6 @@ export {
   addCircuit,
   getUserCircuits,
   getUserScheduledCircuits,
+  getUserTeamCircuits,
   addUserScheduledCircuit,
 };
-
-// HERE -----
