@@ -149,6 +149,104 @@ async function addUserScheduledCircuit(data) {
   }
 }
 
+// team api methods
+async function getTeam(teamId) {
+  try {
+    const result = await $.ajax({
+      url: `/api/teams/${teamId}`,
+      method: "get",
+      dataType: "json",
+    });
+    return result;
+  } catch (error) {
+    return error;
+  }
+}
+
+async function getTeamMembers(teamId) {
+  try {
+    const result = await $.ajax({
+      url: `/api/teams/${teamId}/members`,
+      method: "get",
+      dataType: "json",
+    });
+    return result;
+  } catch (error) {
+    return error;
+  }
+}
+
+async function getTeamSchedules(teamId) {
+  try {
+    const result = await $.ajax({
+      url: `/api/teams/${teamId}/schedules`,
+      method: "get",
+      dataType: "json",
+    });
+    return result;
+  } catch (error) {
+    return error;
+  }
+}
+
+async function addInvite(data) {
+  try {
+    const result = await $.ajax({
+      url: "/api/teams/members/invite",
+      method: "post",
+      data: JSON.stringify(data),
+      dataType: "json",
+      contentType: "application/json",
+    });
+    return result;
+  } catch (error) {
+    return error;
+  }
+}
+
+async function kickMember(data) {
+  try {
+    const result = await $.ajax({
+      url: `/api/teams/${user.tea_id}/members/kick`,
+      method: "put",
+      data: JSON.stringify(data),
+      dataType: "json",
+      contentType: "application/json",
+    });
+    return result;
+  } catch (error) {
+    return error;
+  }
+}
+
+async function leaveTeam(userId, teamId) {
+  try {
+    const result = await $.ajax({
+      url: `/api/users/${userId}/team/${teamId}/leave`,
+      method: "put",
+      data: JSON.stringify({}),
+      dataType: "json",
+      contentType: "application/json",
+    });
+    return result;
+  } catch (error) {
+    return error;
+  }
+}
+
+async function getTeamSchedule(teamId, scheduleId) {
+  try {
+    const result = await $.ajax({
+      url: `/api/teams/${teamId}/schedules/${scheduleId}`,
+      method: "get",
+      dataType: "json"
+    });
+    return result;
+  } catch (error) {
+    return error;
+  }
+}
+
 export {
   getCountries,
   getUserTypes,
@@ -161,4 +259,11 @@ export {
   getUserScheduledCircuits,
   getUserTeamCircuits,
   addUserScheduledCircuit,
+  getTeam,
+  getTeamMembers,
+  getTeamSchedules,
+  addInvite,
+  kickMember,
+  leaveTeam,
+  getTeamSchedule
 };

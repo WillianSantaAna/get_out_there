@@ -24,7 +24,22 @@ router.get("/:id/members", async (req, res) => {
 
 router.get("/:id/circuits", async (req, res) => {
   const id = req.params.id;
-  const { status, result } = await teamModel.getCircuits(id);
+  const { status, result } = await teamModel.getTeamCircuits(id);
+
+  res.status(status).send(result);
+});
+
+router.get("/:id/schedules", async (req, res) => {
+  const id = req.params.id;
+  const { status, result } = await teamModel.getTeamSchedules(id);
+
+  res.status(status).send(result);
+});
+
+router.get("/:id/schedules/:scheduleId", async (req, res) => {
+  const id = req.params.id;
+  const scheduleId = req.params.scheduleId;
+  const { status, result } = await teamModel.getTeamSchedule(id, scheduleId);
 
   res.status(status).send(result);
 });
@@ -39,7 +54,7 @@ router.post("/", async (req, res) => {
 router.post("/:id/circuits", async (req, res) => {
   const id = req.params.id;
   const circuit = req.body;
-  const { status, result } = await teamModel.addCircuit(id, circuit);
+  const { status, result } = await teamModel.addTeamCircuit(id, circuit);
 
   res.status(status).send(result);
 });

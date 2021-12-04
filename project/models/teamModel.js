@@ -1,4 +1,5 @@
 const pool = require("./connection");
+const circuitsModel = require("./circuitModel");
 
 module.exports.getTeams = async () => {
   try {
@@ -46,28 +47,49 @@ module.exports.getTeamMembers = async (id) => {
 
     let result = await pool.query(sql, [id]);
 
-    if (result.rowCount > 0) {
-      result = result.rows;
-      return { status: 200, result };
-    }
+    result = result.rows;
 
-    return {
-      status: 404,
-      result: { msg: `Members with team id ${id} not found` },
-    };
-
+    return { status: 200, result };
   } catch (error) {
     console.log(error);
     return { status: 500, result: error };
   }
 }
 
-module.exports.getCircuits = async (id) => {
+module.exports.getTeamCircuits = async (id) => {
   try {
-    const sql = 'select * from team_circuits where tci_tea_id = $1';
+    const sql = 'select * from circuits where cir_id in (select distinct tci_cir_id from team_circuits where tci_tea_id = $1);';
 
     let result = await pool.query(sql, [id]);
     result = result.rows;
+
+    return { status: 200, result };
+  } catch (error) {
+    console.log(error);
+    return { status: 500, result: error };
+  }
+}
+
+module.exports.getTeamSchedules = async (id) => {
+  try {
+    const sql = 'select tci_id, cir_name from team_circuits inner join circuits on tci_cir_id = cir_id where tci_tea_id = $1 and tci_completed = false and tci_date >= current_date;';
+
+    let result = await pool.query(sql, [id]);
+    result = result.rows;
+
+    return { status: 200, result };
+  } catch (error) {
+    console.log(error);
+    return { status: 500, result: error };
+  }
+}
+
+module.exports.getTeamSchedule = async (id, scheduleId) => {
+  try {
+    const sql = 'select tc.*, c.* from team_circuits tc inner join circuits c on tci_cir_id = cir_id where tci_id = $1 and tci_completed = false and tci_date >= current_date';
+
+    let result = await pool.query(sql, [scheduleId]);
+    result = result.rows[0];
 
     return { status: 200, result };
   } catch (error) {
@@ -101,29 +123,19 @@ module.exports.addTeam = async (team) => {
   }
 }
 
-module.exports.addCircuit = async (id, circuit) => {
+module.exports.addTeamCircuit = async (teamId, circuit) => {
   try {
-    const { name, date, coords} = circuit;
-    let eventDate = new Date(date).valueOf();
-    let coordinates = `[`;
+    const { name, coords, date } = circuit;
 
-    coords.forEach(({ lng, lat }, index) => {
-      coordinates += `(${lng}, ${lat})`;
+    const circuitId = await circuitsModel.addCircuit({name, coords});
+    
+    const sql = `insert into team_circuits (tci_cir_id, tci_tea_id, tci_date) values ($1, $2, $3)`;
 
-      if (index !== coords.length - 1) {
-        coordinates += `, `;
-      } else {
-        coordinates += `]`;
-      }
-    });
-
-    const sql = 'insert into teams_circuits (tc_name, tc_event_date, tc_coords, tc_team_id) values ($1, $2, $3, $4) returning tc_id';
-
-    let result = await pool.query(sql, [name, eventDate, coordinates, id]);
+    let result = await pool.query(sql, [circuitId.result.cir_id, teamId, date]);
 
     result = result.rows[0];
 
-    return { status: 200, result };
+    return { status: 200, result: { msg: "Circuit created" } };
   } catch (error) {
     console.log(error);
     return { status: 500, result: error };
@@ -135,7 +147,7 @@ module.exports.updateCircuit = async (id, circuitId, circuit) => {
     const { name, date, active} = circuit;
     let eventDate = new Date(date).valueOf();
 
-    const sql = 'update teams_circuits set tc_name = $1, tc_event_date = $2, tc_active = $3 where tc_id = $4';
+    const sql = 'update team_circuits set tc_name = $1, tc_event_date = $2, tc_active = $3 where tc_id = $4';
 
     let result = await pool.query(sql, [name, eventDate, active, circuitId]);
 
