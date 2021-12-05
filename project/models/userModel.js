@@ -18,7 +18,7 @@ module.exports.getAllUsers = async () => {
 
 module.exports.getUsersLeaderboard = async () => {
   try {
-    const sql = `SELECT usr.usr_id, usr.usr_name, usr.usr_score, tme.tme_usr_id, tea.tea_name
+    const sql = `SELECT usr.usr_name, usr.usr_score, tea.tea_name
 	    FROM users AS usr, team_members AS tme, teams AS tea
 	    WHERE tea.tea_admin_id = usr.usr_id OR (tme.tme_usr_id = usr.usr_id AND tme.tme_tea_id = tea.tea_id AND tme.tme_active = true)
 	    ORDER BY usr.usr_score DESC`;
