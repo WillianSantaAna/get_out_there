@@ -8,6 +8,12 @@ router.get("/", async (req, res) => {
   res.status(status).send(result);
 });
 
+router.get("/leaderboard", async (req, res) => {
+  const { status, result } = await userModel.getUsersLeaderboard();
+
+  res.status(status).send(result);
+});
+
 router.get("/:id", async (req, res) => {
   const id = req.params.id;
   const { status, result } = await userModel.getUser(id);
@@ -29,6 +35,14 @@ router.post("/login", async (req, res) => {
   res.status(status).send(result);
 });
 
+router.put("/:id/score", async (req, res) => {
+  const id = req.params.id;
+  const { distance } = req.body;
+  const { status, result } = await userModel.addUserScore(id, distance);
+
+  res.status(status).send(result);
+});
+
 router.get("/:id/circuits", async (req, res) => {
   const id = req.params.id;
   const { status, result } = await userModel.getUserCircuits(id);
@@ -45,15 +59,25 @@ router.post("/:id/circuits", async (req, res) => {
   res.status(status).send(result);
 });
 
+router.delete("/:userId/circuits/:circuitId", async (req, res) => {
+  const { userId, circuitId } = req.params;
+  const { status, result } = await userModel.removeUserCircuit(
+    userId,
+    circuitId
+  );
+
+  res.status(status).send(result);
+});
+
 router.get("/:id/schedule", async (req, res) => {
-  let id = req.params.id
+  let id = req.params.id;
   const { status, result } = await userModel.getScheduledCircuits(id);
 
   res.status(status).send(result);
 });
 
-router.post("/:id/schedule", async (req,res) => {
-  let id = req.params.id
+router.post("/:id/schedule", async (req, res) => {
+  let id = req.params.id;
   let data = req.body;
   const { status, result } = await userModel.addScheduledCircuit(id, data);
 

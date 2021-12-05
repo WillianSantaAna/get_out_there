@@ -1,23 +1,44 @@
 import { getLocalStorageUser } from "./setElements.js";
 
 async function getCountries() {
-  const countries = await $.ajax({
-    url: "/api/countries",
-    method: "get",
-    dataType: "json",
-  });
+  try {
+    const countries = await $.ajax({
+      url: "/api/countries",
+      method: "get",
+      dataType: "json",
+    });
 
-  return countries;
+    return countries;
+  } catch (error) {
+    return error;
+  }
 }
 
-async function getUserTypes() {
-  const userTypes = await $.ajax({
-    url: "/api/userTypes",
-    method: "get",
-    dataType: "json",
-  });
+async function getUser(id) {
+  try {
+    const result = await $.ajax({
+      url: `api/users/${id}`,
+      method: "get",
+      dataType: "json",
+    });
+    return result;
+  } catch (error) {
+    return error;
+  }
+}
 
-  return userTypes;
+async function getUsersLeaderboard() {
+  try {
+    const users = await $.ajax({
+      url: "/api/users/leaderboard",
+      method: "get",
+      dataType: "json",
+    });
+
+    return users;
+  } catch (error) {
+    return error;
+  }
 }
 
 async function getUserCircuits(id) {
@@ -34,23 +55,63 @@ async function getUserCircuits(id) {
 }
 
 async function getCircuits() {
-  const circuits = await $.ajax({
-    url: "/api/circuits",
-    method: "get",
-    dataType: "json",
-  });
+  try {
+    const circuits = await $.ajax({
+      url: "/api/circuits",
+      method: "get",
+      dataType: "json",
+    });
 
-  return circuits;
+    return circuits;
+  } catch (error) {
+    return error;
+  }
 }
 
 async function getCircuit(id) {
-  const circuit = await $.ajax({
-    url: `/api/circuits/${id}`,
-    method: "get",
-    dataType: "json",
-  });
+  try {
+    const circuit = await $.ajax({
+      url: `/api/circuits/${id}`,
+      method: "get",
+      dataType: "json",
+    });
 
-  return circuit;
+    return circuit;
+  } catch (error) {
+    return error;
+  }
+}
+
+async function removeUserCircuit(circuitId) {
+  try {
+    const { usr_id } = getLocalStorageUser();
+
+    const circuit = await $.ajax({
+      url: `/api/users/${usr_id}/circuits/${circuitId}`,
+      method: "delete",
+      dataType: "json",
+    });
+
+    return circuit;
+  } catch (error) {
+    return error;
+  }
+}
+
+async function removeTeamCircuit(circuitId) {
+  try {
+    const { tea_id } = getLocalStorageUser();
+
+    const circuit = await $.ajax({
+      url: `/api/teams/${tea_id}/circuits/${circuitId}`,
+      method: "delete",
+      dataType: "json",
+    });
+
+    return circuit;
+  } catch (error) {
+    return error;
+  }
 }
 
 async function addCircuit(circuit) {
@@ -239,7 +300,7 @@ async function getTeamSchedule(teamId, scheduleId) {
     const result = await $.ajax({
       url: `/api/teams/${teamId}/schedules/${scheduleId}`,
       method: "get",
-      dataType: "json"
+      dataType: "json",
     });
     return result;
   } catch (error) {
@@ -247,15 +308,50 @@ async function getTeamSchedule(teamId, scheduleId) {
   }
 }
 
+async function addUserScore(userId, distance) {
+  try {
+    const score = await $.ajax({
+      url: `/api/users/${userId}/score`,
+      method: "put",
+      data: JSON.stringify({ distance }),
+      dataType: "json",
+      contentType: "application/json",
+    });
+
+    return score;
+  } catch (error) {
+    return error;
+  }
+}
+
+async function addTeamScore(teamId, distance) {
+  try {
+    const score = await $.ajax({
+      url: `/api/teams/${teamId}/score`,
+      method: "put",
+      data: JSON.stringify({ distance }),
+      dataType: "json",
+      contentType: "application/json",
+    });
+
+    return score;
+  } catch (error) {
+    return error;
+  }
+}
+
 export {
   getCountries,
-  getUserTypes,
   createUser,
   login,
+  getUser,
+  getUsersLeaderboard,
   getCircuits,
   getCircuit,
   addCircuit,
   getUserCircuits,
+  removeUserCircuit,
+  removeTeamCircuit,
   getUserScheduledCircuits,
   getUserTeamCircuits,
   addUserScheduledCircuit,
@@ -265,5 +361,7 @@ export {
   addInvite,
   kickMember,
   leaveTeam,
-  getTeamSchedule
+  getTeamSchedule,
+  addUserScore,
+  addTeamScore,
 };

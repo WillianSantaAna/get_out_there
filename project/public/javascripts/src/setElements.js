@@ -43,9 +43,15 @@ function setHomePageButtons() {
   if (getLocalStorageUser()) {
     $(".btn-hero").attr("href", "./circuit.html").html("Run Now");
 
-    $(".hero .navbar-nav").html(`      
+    $(".hero .navbar-nav").html(`
+          <li class="nav-item">
+        <a class="nav-link" href="./leaderboard.html">LeaderBoard</a>
+      </li>
+
       <li class="nav-item">
-        <a class="nav-link" href="./${getLocalStorageUser().tea_id ? 'team' : 'joinTeam'}.html">Team</a>
+        <a class="nav-link" href="./${
+          getLocalStorageUser().tea_id ? "team" : "joinTeam"
+        }.html">Team</a>
       </li>
       <li class="nav-item">
         <a class="nav-link" href="./schedule.html">Schedule</a>

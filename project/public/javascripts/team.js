@@ -1,4 +1,8 @@
-import { getLocalStorageUser, setLocalStorageUser, removeLocalStorageUser } from "./src/setElements.js";
+import {
+  getLocalStorageUser,
+  setLocalStorageUser,
+  removeLocalStorageUser,
+} from "./src/setElements.js";
 import {
   getTeam,
   getTeamMembers,
@@ -6,20 +10,22 @@ import {
   addInvite,
   kickMember,
   getTeamSchedule,
-  getCircuit 
+  removeTeamCircuit,
 } from "./src/apiMethods.js";
 import {
   clearMarker,
   generateRoute,
-  saveRoute,
+  getCircuitData,
   createMap,
-  retrieveRoute
+  retrieveRoute,
 } from "./src/mapquest.js";
 
-$("#sign-out").on("click", () => { removeLocalStorageUser() });
+$("#sign-out").on("click", () => {
+  removeLocalStorageUser();
+});
 
 $("#schedule-modal").on("shown.bs.modal", function () {
-  window.dispatchEvent(new Event('resize'));
+  window.dispatchEvent(new Event("resize"));
 });
 
 window.onload = async () => {
@@ -39,18 +45,24 @@ window.onload = async () => {
         const team = await getTeam(user.tea_id);
 
         $("#team-info #team-name").html(team.tea_name);
-        $("#team-info #team-score").html(`<p class="card-text fw-bold m-0">${team.tea_score} KMs</p>`);
+        $("#team-info #team-score").html(
+          `<p class="card-text fw-bold m-0">${team.tea_score} KMs</p>`
+        );
 
         if (team.tea_admin_id === user.usr_id) {
-          $("#btn-member").html(`<a data-bs-toggle="modal" data-bs-target="#invitation-modal"
+          $("#btn-member")
+            .html(`<a data-bs-toggle="modal" data-bs-target="#invitation-modal"
           class="btn btn-success text-center p-2 d-flex align-items-center align-self-start"><i
             class="las la-plus fs-3 d-flex"></i></a>`);
 
-          $("#btn-add-circuit").html(`<a data-bs-toggle="modal" data-bs-target="#schedule-modal"
+          $("#btn-add-circuit")
+            .html(`<a data-bs-toggle="modal" data-bs-target="#schedule-modal"
           class="btn btn-success text-center p-2 d-flex align-items-center align-self-start"><i
             class="las la-plus fs-3 d-flex"></i></a>`);
         } else {
-          $("#btn-member").html(`<a id="leave" class="btn btn-danger text-center px-3 py-2 d-flex align-items-center align-self-start">Leave</a>`);
+          $("#btn-member").html(
+            `<a id="leave" class="btn btn-danger text-center px-3 py-2 d-flex align-items-center align-self-start">Leave</a>`
+          );
         }
 
         let membersHtml = `<section><p class="fw-bold fs-4 mb-0">${team.tea_admin} (Admin)</p></section>`;
@@ -72,7 +84,7 @@ window.onload = async () => {
 
         const schedules = await getTeamSchedules(user.tea_id);
 
-        let scheduleHtml = '';
+        let scheduleHtml = "";
 
         for (let schedule of schedules) {
           scheduleHtml += `<section class="d-flex justify-content-between align-items-center">
@@ -87,15 +99,13 @@ window.onload = async () => {
       }
 
       $("#invitation").on("click", async () => {
-
         try {
           const result = await addInvite({ teamId: user.tea_id });
 
           $("#code").html(result.inv_code);
           $("#copy-code").removeAttr("disabled");
-
         } catch (error) {
-          console.log(error.responseText)
+          console.log(error.responseText);
         }
       });
 
@@ -107,7 +117,7 @@ window.onload = async () => {
       });
 
       $(".kick-member").on("click", async (e) => {
-        let teamMemberId = e.currentTarget.getAttribute('data-id');
+        let teamMemberId = e.currentTarget.getAttribute("data-id");
 
         try {
           const result = await kickMember({ tmeId: teamMemberId });
@@ -115,9 +125,8 @@ window.onload = async () => {
           if (result) {
             window.location.reload();
           }
-
         } catch (error) {
-          console.log(error.responseText)
+          console.log(error.responseText);
         }
       });
 
@@ -130,9 +139,8 @@ window.onload = async () => {
             setLocalStorageUser(user);
             window.location.reload();
           }
-
         } catch (error) {
-          console.log(error.responseText)
+          console.log(error.responseText);
         }
       });
 
@@ -147,7 +155,7 @@ window.onload = async () => {
           window.location.replace("/circuit.html");
         } catch (error) {
           console.log(error);
-        }       
+        }
       });
 
       $(".clear").on("click", clearMarker);
@@ -160,9 +168,12 @@ window.onload = async () => {
           let circuitDate = $("#circuit-date").val();
 
           if (circuitDate.length > 0) {
-            if (circuitName.length === 0) circuitName = `Circuit ${new Date(circuitDate).toLocaleString('us-GB')}`;
+            if (circuitName.length === 0)
+              circuitName = `Circuit ${new Date(circuitDate).toLocaleString(
+                "us-GB"
+              )}`;
 
-            let circuit = await saveRoute(circuitName);
+            let circuit = await getCircuitData(circuitName);
 
             const result = await $.ajax({
               url: `/api/teams/${user.tea_id}/circuits`,
@@ -170,24 +181,22 @@ window.onload = async () => {
               data: JSON.stringify({
                 name: circuit.name,
                 coords: circuit.coords,
-                date: new Date(circuitDate)
+                date: new Date(circuitDate),
               }),
               dataType: "json",
               contentType: "application/json",
             });
 
-            await setTeamCircuits(user.tea_id)
+            await setTeamCircuits(user.tea_id);
 
             alert(result.msg);
           } else {
             alert("Circuit date can't be empty");
           }
-
         } catch (error) {
           console.log(error);
         }
       });
-
     } else {
       window.location.replace("/joinTeam.html");
     }
@@ -197,7 +206,6 @@ window.onload = async () => {
 };
 
 async function setTeamCircuits(teamId) {
-
   const circuits = await $.ajax({
     url: `/api/teams/${teamId}/circuits`,
     method: "get",
@@ -205,15 +213,34 @@ async function setTeamCircuits(teamId) {
   });
 
   const circuitsLinks = circuits.map(({ cir_id, cir_name }) => {
-    return `<button class="btn btn-link cir-btn" data-bs-dismiss="offcanvas" data-id=${cir_id}>${cir_name}</button>`;
+    return `
+    <section class="d-flex justify-content-between">
+      <a class="btn btn-link cir-btn" data-bs-dismiss="offcanvas" data-id=${cir_id}>${cir_name}</a>
+      <a class ="remove-cir" data-id=${cir_id} data-bs-toggle="modal" data-bs-target="#remove-circuit-modal">
+        <i class="las la-window-close red fs-3"></i>
+      </a>
+    </section>`;
   });
 
   $(".offcanvas-body").html(circuitsLinks);
+  $(".cir-btn").on("click", retrieveRoute);
+  $(".remove-cir").on("click", (e) =>
+    sessionStorage.setItem("remove_circuit_id", e.currentTarget.dataset.id)
+  );
+  $("#cancel-circuit-remove").on("click", () =>
+    sessionStorage.removeItem("remove_circuit_id")
+  );
+  $("#confirm-circuit-remove").on("click", removeCircuit);
+}
 
-  $(".cir-btn").on("click", async (e) => {
-    const id = e.currentTarget.dataset.id;
-    const circuit = await getCircuit(id);
+async function removeCircuit(e) {
+  const circuitId = sessionStorage.getItem("remove_circuit_id");
 
-    retrieveRoute(circuit.cir_coords);
-  });
+  const result = await removeTeamCircuit(circuitId);
+
+  const { tea_id } = getLocalStorageUser();
+  await setTeamCircuits(tea_id);
+
+  alert(result.msg);
+  window.location.reload();
 }

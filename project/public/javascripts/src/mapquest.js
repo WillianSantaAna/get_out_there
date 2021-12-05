@@ -1,8 +1,12 @@
+import { getCircuit, addUserScore, addTeamScore } from "./apiMethods.js";
+import { getLocalStorageUser } from "./setElements.js";
+
 L.mapquest.key = "AvxrKxXdAUzYbKny0oFxLy3v7RjndtkW";
 
 let map;
 let layerGroup;
 let directions;
+let distance;
 
 let markers = [];
 
@@ -21,6 +25,7 @@ function clearMarker() {
   $(".route").show();
 
   clearInterval(intervalId);
+  localStorage.removeItem("teamCircuit");
 
   if (directions.directionsRequest) {
     map.remove();
@@ -42,7 +47,9 @@ function generateRoute() {
   drawRoute(locations);
 }
 
-async function saveRoute(name = `Circuit ${new Date().toLocaleString('en-GB')}`) {
+async function getCircuitData(
+  name = `Circuit ${new Date().toLocaleString("en-GB")}`
+) {
   let newLocations = directions.directionsLayer.locations.map(
     (loc) => loc.latLng
   );
@@ -53,7 +60,6 @@ async function saveRoute(name = `Circuit ${new Date().toLocaleString('en-GB')}`)
 }
 
 function startRunning() {
-  let index = 0;
   let locations = directions.directionsLayer.locations.map((loc) => loc.latLng);
   let achievedCheckPoint = [];
 
@@ -69,23 +75,46 @@ function startRunning() {
   $(".quit").on("click", () => window.location.replace("/"));
 
   watcherId = navigator.geolocation.watchPosition(
-    (pos) => {
+    async (pos) => {
       layerGroup.clearLayers();
 
       let playerCurrPos = [pos.coords.latitude, pos.coords.longitude];
-      let currCheckPoint = [locations[index].lat, locations[index].lng];
+      let currCheckPoint = [
+        locations[achievedCheckPoint.length].lat,
+        locations[achievedCheckPoint.length].lng,
+      ];
 
       if (checkPosition(playerCurrPos, currCheckPoint)) {
         achievedCheckPoint.push(currCheckPoint);
-        index++;
       }
 
       addMarker(playerCurrPos, "P");
       achievedCheckPoint.forEach((cp) => addMarker(cp, "X"));
 
-      if (index >= locations.length) {
-        $(".distance").text(`Finished!`);
+      if (achievedCheckPoint.length === locations.length) {
         navigator.geolocation.clearWatch(watcherId);
+        let result = "";
+
+        const { usr_id, tea_id } = getLocalStorageUser();
+        const userScore = await addUserScore(usr_id, distance);
+        console.log(`userScore`, userScore);
+
+        result += `<p>You won ${userScore.received_score}KMs and now have ${userScore.usr_score}KMs</p>`;
+
+        if (tea_id && localStorage.getItem("teamCircuit")) {
+          const teamScore = await addTeamScore(tea_id, distance);
+          console.log(`teamScore`, teamScore);
+
+          result += `<p>You team won ${teamScore.received_score}KMs and now have ${teamScore.tea_score}KMs</p>`;
+          localStorage.removeItem("teamCircuit");
+        }
+
+        $(".finish-circuit-result").html(result);
+
+        new bootstrap.Modal("#finish-circuit-modal").show();
+        $("#finish-circuit-btn").on("click", () =>
+          window.location.replace("/")
+        );
       }
     },
     (err) => console.log(err),
@@ -154,7 +183,7 @@ function directionsCallback(error, response) {
 
 function setDistance() {
   if (directions.directionsLayer.primaryRoute) {
-    const { distance } = directions.directionsLayer.primaryRoute;
+    distance = directions.directionsLayer.primaryRoute.distance;
     $(".distance").text(`distance: ${parseFloat(distance).toFixed(2)}Km`);
   }
 
@@ -164,10 +193,14 @@ function setDistance() {
   }
 }
 
-function retrieveRoute(coords) {
+async function retrieveRoute(e) {
   clearMarker();
-  
-  drawRoute(coords);
+
+  const id = e.currentTarget.dataset.id;
+
+  const circuit = await getCircuit(id);
+
+  drawRoute(circuit.cir_coords);
 }
 
 function mapClick(e) {
@@ -205,15 +238,10 @@ function checkPosition(playerCurrPos, currCheckPoint) {
 
 export {
   clearMarker,
+  drawRoute,
   generateRoute,
-  saveRoute,
+  getCircuitData,
   startRunning,
   createMap,
-  drawRoute,
-  directionsCallback,
-  setDistance,
   retrieveRoute,
-  mapClick,
-  addMarker,
-  checkPosition
 };

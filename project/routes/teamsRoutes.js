@@ -51,10 +51,28 @@ router.post("/", async (req, res) => {
   res.status(status).send(result);
 });
 
+router.put("/:id/score", async (req, res) => {
+  const id = req.params.id;
+  const { distance } = req.body;
+  const { status, result } = await teamModel.addTeamScore(id, distance);
+
+  res.status(status).send(result);
+});
+
 router.post("/:id/circuits", async (req, res) => {
   const id = req.params.id;
   const circuit = req.body;
   const { status, result } = await teamModel.addTeamCircuit(id, circuit);
+
+  res.status(status).send(result);
+});
+
+router.delete("/:teamId/circuits/:circuitId", async (req, res) => {
+  const { teamId, circuitId } = req.params;
+  const { status, result } = await teamModel.removeTeamCircuit(
+    teamId,
+    circuitId
+  );
 
   res.status(status).send(result);
 });
@@ -77,7 +95,11 @@ router.put("/:id/circuits/:circuitId", async (req, res) => {
   const id = req.params.id;
   const circuitId = req.params.circuitId;
   const circuit = req.body;
-  const { status, result } = await teamModel.updateCircuit(id, circuitId, circuit);
+  const { status, result } = await teamModel.updateCircuit(
+    id,
+    circuitId,
+    circuit
+  );
 
   res.status(status).send(result);
 });
