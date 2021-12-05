@@ -9,11 +9,11 @@ $("#sign-out").on("click", () => {
 });
 
 window.onload = async () => {
-  const { usr_id, tea_id } = getLocalStorageUser();
-
-  if (!usr_id) {
+  if (!getLocalStorageUser()) {
     window.location.replace("/");
   }
+
+  const { usr_id, tea_id } = getLocalStorageUser();
 
   const user = await getUser(usr_id);
 
