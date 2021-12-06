@@ -11,11 +11,11 @@
   gap: 20px;
 }
 
-p {
+.distance {
   text-align: center;
   margin: 0;
 }
 
 .offcanvas .btn {
-  display: block;
+  /* display: block; */
 }

@@ -20,7 +20,6 @@ CREATE TABLE IF NOT EXISTS public.teams
     tea_id serial NOT NULL,
     tea_name text NOT NULL,
     tea_description text NOT NULL,
-    tea_admin_id bigint NOT NULL,
     tea_open boolean NOT NULL DEFAULT TRUE,
     tea_score bigint NOT NULL DEFAULT 0,
     tea_created_at timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -40,6 +39,7 @@ CREATE TABLE IF NOT EXISTS public.team_members
     tme_id serial NOT NULL,
     tme_tea_id bigint NOT NULL,
     tme_usr_id bigint NOT NULL,
+	tme_is_admin boolean NOT NULL DEFAULT false,
     tme_active boolean NOT NULL DEFAULT true,
     tme_created_at timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (tme_id)
@@ -88,14 +88,6 @@ CREATE TABLE IF NOT EXISTS public.team_circuits
 ALTER TABLE IF EXISTS public.users
     ADD FOREIGN KEY (usr_country_id)
     REFERENCES public.countries (cou_id) MATCH SIMPLE
-    ON UPDATE NO ACTION
-    ON DELETE NO ACTION
-    NOT VALID;
-
-
-ALTER TABLE IF EXISTS public.teams
-    ADD FOREIGN KEY (tea_admin_id)
-    REFERENCES public.users (usr_id) MATCH SIMPLE
     ON UPDATE NO ACTION
     ON DELETE NO ACTION
     NOT VALID;
@@ -158,3 +150,18 @@ ALTER TABLE IF EXISTS public.team_circuits
 
 
 END;
+
+-- Stored Procedures
+CREATE OR REPLACE PROCEDURE create_team(
+	team_name TEXT,
+	team_description TEXT,
+	user_id BIGINT,
+	INOUT team_id BIGINT DEFAULT NULL
+)
+LANGUAGE plpgsql AS
+$$
+BEGIN
+	INSERT INTO teams (tea_name, tea_description) VALUES (team_name, team_description) RETURNING tea_id INTO team_id;
+	INSERT INTO team_members (tme_tea_id, tme_usr_id, tme_is_admin) VALUES (team_id, user_id, true);
+END
+$$;

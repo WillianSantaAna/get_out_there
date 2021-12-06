@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Get Out There - Run</title>
+    <title>GetOutThere - Run</title>
     <!-- favicon -->
     <link
       rel="shortcut icon"
@@ -48,6 +48,7 @@
     <!-- javascript -->
     <script type="module" src="./javascripts/circuit.js"></script>
   </head>
+
   <body>
     <!-- Header -->
     <header class="dark">
@@ -93,37 +94,165 @@
       </nav>
     </header>
     <main class="container py-3">
-      <section id="map" class="mx-auto"></section>
+      <section id="map" class="mx-auto mt-5"></section>
       <p class="distance"></p>
       <section class="btn-container py-3">
-        <button class="btn btn-warning clear">
-          <i class="las la-undo-alt"></i>
+        <button class="btn btn-warning p-2 clear">
+          <i class="las la-undo-alt fs-5 d-flex"></i>
         </button>
-        <button class="btn btn-success route">
-          <i class="las la-route"></i>
+        <button class="btn btn-success p-2 route">
+          <i class="las la-route fs-5 d-flex"></i>
         </button>
-        <button class="btn btn-secondary save">
-          <i class="las la-save"></i>
+        <button
+          class="btn btn-secondary p-2 save"
+          data-bs-toggle="modal"
+          data-bs-target="#save-circuit-modal"
+        >
+          <i class="las la-save fs-5 d-flex"></i>
         </button>
-        <button class="btn btn-primary start">Start</button>
+        <button class="btn btn-primary p-2 start">Start Running</button>
       </section>
-
+      <!-- offcanvas -->
       <section
         class="offcanvas offcanvas-start"
         tabindex="-1"
         id="offcanvasLeft"
         aria-labelledby="offcanvasLeftLabel"
       >
-        <section class="offcanvas-header">
-          <h5 id="offcanvasLeftLabel">Circuits</h5>
+        <section class="offcanvas-header dark py-4">
+          <h5 id="offcanvasLeftLabel" class="mb-0">Circuits</h5>
           <button
             type="button"
-            class="btn-close text-reset"
+            class="btn-close btn-close-white text-reset"
             data-bs-dismiss="offcanvas"
             aria-label="Close"
           ></button>
         </section>
         <section class="offcanvas-body"></section>
+      </section>
+      <!-- remove circuit modal -->
+      <section
+        class="modal fade"
+        id="remove-circuit-modal"
+        data-bs-backdrop="static"
+        data-bs-keyboard="false"
+        tabindex="-1"
+        aria-labelledby="staticBackdropLabel"
+        aria-hidden="true"
+      >
+        <section class="modal-dialog modal-dialog-centered">
+          <section class="modal-content">
+            <section class="modal-header dark">
+              <h5 class="modal-title" id="staticBackdropLabel">
+                Are you sure?
+              </h5>
+              <input
+                type="button"
+                class="btn-close btn-close-white"
+                data-bs-dismiss="modal"
+                aria-label="Close"
+              />
+            </section>
+            <section class="modal-body">
+              <p>Deleting the circuit will delete all its schedules.</p>
+              <input
+                id="cancel-circuit-remove"
+                type="button"
+                class="btn btn-secondary"
+                data-bs-dismiss="modal"
+                value="Cancel"
+              />
+              <input
+                id="confirm-circuit-remove"
+                type="button"
+                class="btn btn-success"
+                value="Confirm"
+              />
+            </section>
+          </section>
+        </section>
+      </section>
+      <!-- save circuit modal -->
+      <section
+        class="modal fade"
+        id="save-circuit-modal"
+        data-bs-backdrop="static"
+        data-bs-keyboard="false"
+        tabindex="-1"
+        aria-labelledby="staticBackdropLabel"
+        aria-hidden="true"
+      >
+        <section class="modal-dialog modal-dialog-centered">
+          <section class="modal-content">
+            <section class="modal-header dark">
+              <h5 class="modal-title" id="staticBackdropLabel">
+                Saving circuit
+              </h5>
+              <input
+                type="button"
+                class="btn-close btn-close-white"
+                data-bs-dismiss="modal"
+                aria-label="Close"
+              />
+            </section>
+            <section class="modal-body">
+              <section class="pb-3">
+                <label class="form-label" for="circuit-name"
+                  >Circuit Name</label
+                >
+                <input
+                  class="form-control pb-3"
+                  type="text"
+                  id="circuit-name"
+                  placeholder="Optional"
+                />
+              </section>
+              <input
+                id="cancel-circuit-save"
+                type="button"
+                class="btn btn-secondary"
+                data-bs-dismiss="modal"
+                value="Cancel"
+              />
+              <input
+                id="confirm-circuit-save"
+                type="button"
+                class="btn btn-success"
+                data-bs-dismiss="modal"
+                value="Confirm"
+              />
+            </section>
+          </section>
+        </section>
+      </section>
+      <!-- finish circuit modal -->
+      <section
+        class="modal fade"
+        id="finish-circuit-modal"
+        data-bs-backdrop="static"
+        data-bs-keyboard="false"
+        tabindex="-1"
+        aria-labelledby="staticBackdropLabel"
+        aria-hidden="true"
+      >
+        <section class="modal-dialog modal-dialog-centered">
+          <section class="modal-content">
+            <section class="modal-header dark">
+              <h5 class="modal-title" id="staticBackdropLabel">
+                Congratulations!
+              </h5>
+            </section>
+            <section class="modal-body">
+              <section class="finish-circuit-result"></section>
+              <input
+                id="finish-circuit-btn"
+                type="button"
+                class="btn btn-success"
+                value="OK"
+              />
+            </section>
+          </section>
+        </section>
       </section>
     </main>
     <!-- Footer -->

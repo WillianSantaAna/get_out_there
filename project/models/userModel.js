@@ -16,6 +16,23 @@ module.exports.getAllUsers = async () => {
   }
 };
 
+module.exports.getUsersLeaderboard = async () => {
+  try {
+    const sql = `SELECT usr.usr_name, usr.usr_score, tea.tea_name
+	    FROM users AS usr, team_members AS tme, teams AS tea
+	    WHERE tme.tme_usr_id = usr.usr_id AND tme.tme_tea_id = tea.tea_id AND tme.tme_active = true
+	    ORDER BY usr.usr_score DESC`;
+
+    let result = await pool.query(sql);
+    result = result.rows;
+
+    return { status: 200, result };
+  } catch (error) {
+    console.log(error);
+    return { status: 500, result: error };
+  }
+};
+
 module.exports.getUser = async (id) => {
   try {
     const sql = "SELECT * FROM users WHERE usr_id = $1";
@@ -80,8 +97,8 @@ module.exports.login = async (user) => {
     const { email, password } = user;
     const sql = `SELECT usr.usr_id, usr.usr_name, usr.usr_password, tea_id
     FROM users AS usr
-    LEFT JOIN team_members AS tme ON usr.usr_id = tme.tme_usr_id AND tme.tme_active = true
-    LEFT JOIN teams AS tea ON usr.usr_id = tea.tea_admin_id OR tme.tme_tea_id = tea.tea_id
+    FULL JOIN team_members AS tme ON usr.usr_id = tme.tme_usr_id AND tme.tme_active = true
+    FULL JOIN teams AS tea ON tme.tme_tea_id = tea.tea_id
     WHERE usr.usr_email = $1`;
 
     let result = await pool.query(sql, [email]);
@@ -106,10 +123,36 @@ module.exports.login = async (user) => {
   }
 };
 
+module.exports.addUserScore = async (userId, distance) => {
+  try {
+    let score = Math.round(distance);
+
+    if (distance >= 10) {
+      score = Math.round(distance * 1.2);
+    }
+
+    const sql =
+      "UPDATE users SET usr_score = usr_score + $1 WHERE usr_id = $2 RETURNING usr_score";
+
+    let result = await pool.query(sql, [score, userId]);
+
+    if (result.rowCount <= 0) {
+      return { status: 400, result: { msg: "Wrong userId" } };
+    }
+
+    result = result.rows[0];
+
+    return { status: 200, result: { received_score: score, ...result } };
+  } catch (error) {
+    console.log(error);
+    return { status: 500, result: error };
+  }
+};
 
 module.exports.getUserCircuits = async function (id) {
   try {
-    const sql = "SELECT * FROM circuits WHERE cir_id in (SELECT DISTINCT uci_cir_id FROM user_circuits WHERE uci_usr_id = $1);";
+    const sql =
+      "SELECT * FROM circuits WHERE cir_id in (SELECT DISTINCT uci_cir_id FROM user_circuits WHERE uci_usr_id = $1 AND uci_active = true);";
     let result = await pool.query(sql, [id]);
 
     result = result.rows;
@@ -131,7 +174,21 @@ module.exports.addUserCircuit = async (userId, circuit) => {
 
     let result = await pool.query(sql, [circuitId.result.cir_id, userId, date]);
 
-    return { status: 200, result: { msg: "Circuit created" } };
+    return { status: 200, result: { msg: "Circuit saved" } };
+  } catch (error) {
+    console.log(error);
+    return { status: 500, result: error };
+  }
+};
+
+module.exports.removeUserCircuit = async (userId, circuitId) => {
+  try {
+    const sql =
+      "UPDATE user_circuits SET uci_active = false WHERE uci_usr_id = $1 AND uci_cir_id = $2";
+
+    let result = await pool.query(sql, [userId, circuitId]);
+
+    return { status: 200, result: { msg: "Circuit removed" } };
   } catch (error) {
     console.log(error);
     return { status: 500, result: error };
@@ -140,7 +197,8 @@ module.exports.addUserCircuit = async (userId, circuit) => {
 
 module.exports.getScheduledCircuits = async function (id) {
   try {
-    const sql = "SELECT * FROM user_circuits WHERE uci_usr_id = $1 AND uci_completed = false AND uci_active = true AND uci_date != '1970-01-01 00:00:00' ORDER BY uci_date ASC;";
+    const sql =
+      "SELECT * FROM user_circuits WHERE uci_usr_id = $1 AND uci_completed = false AND uci_active = true AND uci_date != '1970-01-01 00:00:00' ORDER BY uci_date ASC;";
     let result = await pool.query(sql, [id]);
 
     result = result.rows;
@@ -153,7 +211,9 @@ module.exports.getScheduledCircuits = async function (id) {
 
 module.exports.addScheduledCircuit = async function (id, data) {
   let dt = new Date(data.datetime);
-  const dtformat = `${dt.getFullYear()}-${dt.getMonth() + 1}-${dt.getDate()} ${dt.getHours()}:${dt.getMinutes()}:00`;
+  const dtformat = `${dt.getFullYear()}-${
+    dt.getMonth() + 1
+  }-${dt.getDate()} ${dt.getHours()}:${dt.getMinutes()}:00`;
   const cid = parseInt(data.circuit_id);
   const uid = parseInt(id);
 
@@ -169,11 +229,11 @@ module.exports.addScheduledCircuit = async function (id, data) {
     return { status: 400, result: { msg: "Malformed data" } };
   }
 
-  try {  
+  try {
     const sql = `INSERT INTO user_circuits(uci_cir_id, uci_usr_id, uci_date) VALUES ($1, $2, timestamp '${dtformat}');`;
     let res = await pool.query(sql, [cid, uid]);
     result = res.rows[0];
-    
+
     return { status: 200, result: result };
   } catch (error) {
     console.log(error);
@@ -206,7 +266,8 @@ module.exports.removeScheduledCircuit = async function (userId, scheduleId) {
 
 module.exports.leaveTeam = async function (id, teamId) {
   try {
-    const sql = "update team_members set tme_active = false where tme_usr_id = $1 and tme_tea_id = $2";
+    const sql =
+      "update team_members set tme_active = false where tme_usr_id = $1 and tme_tea_id = $2";
 
     let result = await pool.query(sql, [id, teamId]);
 

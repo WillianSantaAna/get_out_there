@@ -76,39 +76,71 @@ main {
 }
 
 .gradient-bg {
-  background: var(--gradientColor);
+  background: var(--gradientColor) !important;
+}
+
+.main-blue-bg {
+  background-color: var(--mainBlue) !important;
+}
+
+.dark-blue-bg {
+  background-color: var(--darkBlue) !important;
+}
+
+.main-white-bg {
+  background-color: var(--mainWhite) !important;
+}
+
+.main-black-bg {
+  background-color: var(--mainBlack) !important;
+}
+
+.green-bg {
+  background-color: var(--green) !important;
+}
+
+.yellow-bg {
+  background-color: var(--yellow) !important;
+}
+
+.orange-bg {
+  background-color: var(--orange) !important;
+}
+
+.red-bg {
+  background-color: var(--red) !important;
 }
 
 .main-blue {
-  color: var(--mainBlue);
+  color: var(--mainBlue) !important;
 }
 
 .dark-blue {
-  color: var(--darkBlue);
+  color: var(--darkBlue) !important;
 }
 
 .main-white {
-  color: var(--mainWhite);
+  color: var(--mainWhite) !important;
 }
 
 .main-black {
-  color: var(--mainBlack);
+  color: var(--mainBlack) !important;
 }
 
 .green {
-  color: var(--green);
+  color: var(--green) !important;
 }
 
 .yellow {
-  color: var(--yellow);
+  color: var(--yellow) !important;
 }
 
 .orange {
-  color: var(--orange);
+  color: var(--orange) !important;
 }
 
 .red {
-  color: var(--red);
+  color: var(--red) !important;
 }
 
 .btn {

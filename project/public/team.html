@@ -2,15 +2,15 @@
 <html lang="en">
 
 <head>
-  <meta charset="UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>GetOutThere - Team</title>
   <!-- favicon -->
   <link rel="shortcut icon" href="./images/logo/icon.png" type="image/x-icon" />
   <!-- Lime Awesome -->
   <link rel="stylesheet"
-    href="https://maxst.icons8.com/vue-static/landings/line-awesome/line-awesome/1.3.0/css/line-awesome.min.css">
+    href="https://maxst.icons8.com/vue-static/landings/line-awesome/line-awesome/1.3.0/css/line-awesome.min.css" />
   <!-- Bootstrap -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
     integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous" />
@@ -21,10 +21,15 @@
   <!-- jquery -->
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"
     integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+  <!-- mapquest -->
+  <script src="https://api.mqcdn.com/sdk/mapquest-js/v1.3.2/mapquest.js"></script>
+  <link type="text/css" rel="stylesheet" href="https://api.mqcdn.com/sdk/mapquest-js/v1.3.2/mapquest.css" />
   <!-- Styles -->
-  <link rel="stylesheet" href="./stylesheets/style.css">
-  <link rel="stylesheet" href="./stylesheets/team.css">
+  <link rel="stylesheet" href="./stylesheets/style.css" />
+  <link rel="stylesheet" href="./stylesheets/team.css" />
+  <link rel="stylesheet" href="./stylesheets/circuit.css" />
   <!-- Scripts -->
+  <script type="module" src="./javascripts/src/mapquest.js"></script>
   <script type="module" src="./javascripts/team.js"></script>
 </head>
 
@@ -59,7 +64,7 @@
   </header>
   <!-- Main -->
   <main class="container">
-    <section id="team-content" style="display: none;">
+    <section id="team-content" style="display: none">
       <section class="card mt-5">
         <section class="card-body px-md-5">
           <section id="team-info" class="row d-flex justify-content-between">
@@ -70,7 +75,13 @@
               </section>
             </section>
             <section class="col-md-5">
-              <section id="team-score" class="text-end fs-4 d-flex justify-content-between d-md-block"></section>
+              <section id="team-score" class="
+                    text-end
+                    fs-4
+                    d-flex
+                    justify-content-between
+                    d-md-block
+                  "></section>
             </section>
           </section>
         </section>
@@ -86,11 +97,11 @@
         </section>
         <section class="col-md-6 p-5 mt-4">
           <section class="d-flex justify-content-between">
-            <h3 class="mb-0 fw-bold">Schedule Circuits</h3>
+            <h3 class="mb-0 fw-bold">Scheduled Circuits</h3>
             <section id="btn-add-circuit"></section>
           </section>
           <section class="border-bottom border-dark border-2 my-4"></section>
-          <section id="team-circuits"></section>
+          <section id="team-schedules"></section>
         </section>
         <section class="col-md-6"></section>
       </section>
@@ -99,14 +110,16 @@
         aria-labelledby="staticBackdropLabel" aria-hidden="true">
         <section class="modal-dialog modal-dialog-centered">
           <section class="modal-content">
-            <section class="modal-header">
-              <h5 class="modal-title" id="staticBackdropLabel">Invite Member</h5>
-              <input type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+            <section class="modal-header dark">
+              <h5 class="modal-title" id="staticBackdropLabel">
+                Invite Member
+              </h5>
+              <input type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close" />
             </section>
             <section class="modal-body d-flex align-items-center">
-              <input id="invitation" type="button" class="btn gradient-bg main-white" value="Invite">
+              <input id="invitation" type="button" class="btn gradient-bg main-white" value="Invite" />
               <span id="code" class="w-100 px-3">#example</span>
-              <input id="copy-code" type="button" class="btn btn-success" value="Copy" disabled>
+              <input id="copy-code" type="button" class="btn btn-success" value="Copy" disabled />
             </section>
           </section>
         </section>
@@ -116,12 +129,72 @@
         aria-labelledby="staticBackdropLabel" aria-hidden="true">
         <section class="modal-dialog modal-fullscreen">
           <section class="modal-content">
-            <section class="modal-header">
-              <h5 class="modal-title" id="staticBackdropLabel">New Schedule</h5>
-              <input type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+            <section class="modal-header dark">
+              <h5 class="modal-title" id="staticBackdropLabel">
+                New Schedule
+              </h5>
+              <input type="button" class="btn-close btn-close-white main-white" data-bs-dismiss="modal"
+                aria-label="Close" />
             </section>
             <section class="modal-body">
-              ...
+              <section class="container">
+                <section class="row">
+                  <section class="col-md-6">
+                    <label class="form-label" for="circuit-name">Circuit Name</label>
+                    <input class="form-control" type="text" id="circuit-name" placeholder="Optional" />
+                  </section>
+                  <section class="col-md-6">
+                    <label class="form-label" for="circuit-date">Circuit Date</label>
+                    <input class="form-control" type="datetime-local" id="circuit-date" />
+                  </section>
+                </section>
+                <section id="map" class="mx-auto mt-5"></section>
+                <p class="distance"></p>
+                <section class="btn-container py-3">
+                  <button class="btn btn-warning p-2" data-bs-toggle="offcanvas" data-bs-target="#offcanvasLeft"
+                    aria-controls="offcanvasLeft">
+                    <i class="las la-history fs-5 d-flex"></i>
+                  </button>
+                  <button class="btn btn-warning clear p-2">
+                    <i class="las la-undo-alt fs-5 d-flex"></i>
+                  </button>
+                  <button class="btn btn-success route p-2">
+                    <i class="las la-route fs-5 d-flex"></i>
+                  </button>
+                  <button class="btn btn-secondary save p-2">
+                    <i class="las la-save fs-5 d-flex"></i>
+                  </button>
+                </section>
+                <section class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasLeft"
+                  aria-labelledby="offcanvasLeftLabel">
+                  <section class="offcanvas-header dark py-4">
+                    <h5 id="offcanvasLeftLabel" class="mb-0">Circuits</h5>
+                    <button type="button" class="btn-close btn-close-white text-reset" data-bs-dismiss="offcanvas"
+                      aria-label="Close"></button>
+                  </section>
+                  <section class="offcanvas-body"></section>
+                </section>
+              </section>
+            </section>
+          </section>
+        </section>
+      </section>
+      <!-- remove circuit modal -->
+      <section class="modal fade" id="remove-circuit-modal" data-bs-backdrop="static" data-bs-keyboard="false"
+        tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <section class="modal-dialog modal-dialog-centered">
+          <section class="modal-content">
+            <section class="modal-header dark">
+              <h5 class="modal-title" id="staticBackdropLabel">
+                Are you sure?
+              </h5>
+              <input type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close" />
+            </section>
+            <section class="modal-body">
+              <p>Deleting the circuit will delete all its schedules.</p>
+              <input id="cancel-circuit-remove" type="button" class="btn btn-secondary" data-bs-dismiss="modal"
+                value="Cancel" />
+              <input id="confirm-circuit-remove" type="button" class="btn btn-success" value="Confirm" />
             </section>
           </section>
         </section>
@@ -131,9 +204,15 @@
   <!-- Footer -->
   <footer class="dark">
     <ul class="nav justify-content-center pb-1">
-      <li class="nav-item"><a href="#" class="nav-link px-2"><i class="lab la-facebook-f"></i></a></li>
-      <li class="nav-item"><a href="#" class="nav-link px-2"><i class="lab la-instagram"></i></a></li>
-      <li class="nav-item"><a href="#" class="nav-link px-2"><i class="lab la-twitter"></i></a></li>
+      <li class="nav-item">
+        <a href="#" class="nav-link px-2"><i class="lab la-facebook-f"></i></a>
+      </li>
+      <li class="nav-item">
+        <a href="#" class="nav-link px-2"><i class="lab la-instagram"></i></a>
+      </li>
+      <li class="nav-item">
+        <a href="#" class="nav-link px-2"><i class="lab la-twitter"></i></a>
+      </li>
     </ul>
     <p class="text-center">© Copyright 2021 GetOutThere!</p>
   </footer>
