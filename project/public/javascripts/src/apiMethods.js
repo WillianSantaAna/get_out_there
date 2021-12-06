@@ -149,6 +149,20 @@ async function addUserScheduledCircuit(data) {
   }
 }
 
+async function removeUserScheduledCircuit(sid) {
+  const user = getLocalStorageUser();
+  try {
+    const result = await $.ajax({
+      url: `/api/users/${user.usr_id}/schedule/${sid}`,
+      method: "put",
+      dataType: "json",
+    });
+    return result;
+  } catch (error) {
+    return error;
+  }
+}
+
 export {
   getCountries,
   getUserTypes,
@@ -161,4 +175,5 @@ export {
   getUserScheduledCircuits,
   getUserTeamCircuits,
   addUserScheduledCircuit,
+  removeUserScheduledCircuit,
 };

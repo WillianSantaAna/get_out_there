@@ -181,6 +181,29 @@ module.exports.addScheduledCircuit = async function (id, data) {
   }
 };
 
+module.exports.removeScheduledCircuit = async function (userId, scheduleId) {
+  const uid = parseInt(userId);
+  const sid = parseInt(scheduleId);
+  
+  try {  
+    const sql = `UPDATE user_circuits SET uci_active = false WHERE uci_id = $1 AND uci_usr_id = $2;`;
+    
+    let result = await pool.query(sql, [sid, uid]);
+    
+    if (result.rowCount > 0) {
+      return { status: 200, result };
+    } else {
+      return {
+        status: 404,
+        result: `User with id ${uid} and user_schedule id ${sid} not found`,
+      };
+    }
+  } catch (error) {
+    console.log(error);
+    return { status: 500, result: error };
+  }
+};
+
 module.exports.leaveTeam = async function (id, teamId) {
   try {
     const sql = "update team_members set tme_active = false where tme_usr_id = $1 and tme_tea_id = $2";

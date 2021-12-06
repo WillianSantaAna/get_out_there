@@ -46,16 +46,24 @@ router.post("/:id/circuits", async (req, res) => {
 });
 
 router.get("/:id/schedule", async (req, res) => {
-  let id = req.params.id
+  const id = req.params.id
   const { status, result } = await userModel.getScheduledCircuits(id);
 
   res.status(status).send(result);
 });
 
 router.post("/:id/schedule", async (req,res) => {
-  let id = req.params.id
-  let data = req.body;
+  const id = req.params.id;
+  const data = req.body;
   const { status, result } = await userModel.addScheduledCircuit(id, data);
+
+  res.status(status).send(result);
+});
+
+router.put("/:uid/schedule/:sid", async (req, res) => {
+  const uid = req.params.uid;
+  const sid = req.params.sid;
+  const { status, result } = await userModel.removeScheduledCircuit(uid, sid);
 
   res.status(status).send(result);
 });
