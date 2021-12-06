@@ -104,6 +104,14 @@ router.put("/:id/circuits/:circuitId", async (req, res) => {
   res.status(status).send(result);
 });
 
+router.put("/:id/members/promote", async (req, res) => {
+  const id = req.params.id;
+  const data = req.body;
+  const { status, result } = await teamModel.promoteMember(id, data);
+
+  res.status(status).send(result);
+});
+
 router.put("/:id/members/kick", async (req, res) => {
   const teamMemberId = req.body.tmeId;
   const { status, result } = await teamModel.kickMember(teamMemberId);

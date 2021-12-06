@@ -265,10 +265,25 @@ async function addInvite(data) {
   }
 }
 
-async function kickMember(data) {
+async function promoteMember(teamId, data) {
   try {
     const result = await $.ajax({
-      url: `/api/teams/${user.tea_id}/members/kick`,
+      url: `/api/teams/${teamId}/members/promote`,
+      method: "put",
+      data: JSON.stringify(data),
+      dataType: "json",
+      contentType: "application/json",
+    });
+    return result;
+  } catch (error) {
+    return error;
+  }
+}
+
+async function kickMember(teamId, data) {
+  try {
+    const result = await $.ajax({
+      url: `/api/teams/${teamId}/members/kick`,
       method: "put",
       data: JSON.stringify(data),
       dataType: "json",
@@ -308,6 +323,35 @@ async function getTeamSchedule(teamId, scheduleId) {
   }
 }
 
+async function getTeamCircuits(teamId) {
+  try {
+    const result = await $.ajax({
+      url: `/api/teams/${teamId}/circuits`,
+      method: "get",
+      dataType: "json",
+    });
+    return result;
+  } catch (error) {
+    console.log(error)
+  }
+}
+
+async function addTeamCircuit(teamId, data) {
+  try {
+    const result = await $.ajax({
+      url: `/api/teams/${teamId}/circuits`,
+      method: "post",
+      data: JSON.stringify(data),
+      dataType: "json",
+      contentType: "application/json",
+    });
+    return result;
+  } catch (error) {
+    console.log(error)
+  }
+}
+
+// leader board
 async function addUserScore(userId, distance) {
   try {
     const score = await $.ajax({
@@ -359,9 +403,12 @@ export {
   getTeamMembers,
   getTeamSchedules,
   addInvite,
+  promoteMember,
   kickMember,
   leaveTeam,
   getTeamSchedule,
+  getTeamCircuits,
+  addTeamCircuit,
   addUserScore,
   addTeamScore,
 };

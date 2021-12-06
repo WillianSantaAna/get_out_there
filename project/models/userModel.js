@@ -20,7 +20,7 @@ module.exports.getUsersLeaderboard = async () => {
   try {
     const sql = `SELECT usr.usr_name, usr.usr_score, tea.tea_name
 	    FROM users AS usr, team_members AS tme, teams AS tea
-	    WHERE tea.tea_admin_id = usr.usr_id OR (tme.tme_usr_id = usr.usr_id AND tme.tme_tea_id = tea.tea_id AND tme.tme_active = true)
+	    WHERE tme.tme_usr_id = usr.usr_id AND tme.tme_tea_id = tea.tea_id AND tme.tme_active = true
 	    ORDER BY usr.usr_score DESC`;
 
     let result = await pool.query(sql);
@@ -98,7 +98,7 @@ module.exports.login = async (user) => {
     const sql = `SELECT usr.usr_id, usr.usr_name, usr.usr_password, tea_id
     FROM users AS usr
     FULL JOIN team_members AS tme ON usr.usr_id = tme.tme_usr_id AND tme.tme_active = true
-    FULL JOIN teams AS tea ON usr.usr_id = tea.tea_admin_id OR tme.tme_tea_id = tea.tea_id
+    FULL JOIN teams AS tea ON tme.tme_tea_id = tea.tea_id
     WHERE usr.usr_email = $1`;
 
     let result = await pool.query(sql, [email]);

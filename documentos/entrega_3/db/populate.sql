@@ -258,6 +258,11 @@ insert into users (usr_name, usr_email, usr_password, usr_country_id) values ('L
 insert into users (usr_name, usr_email, usr_password, usr_country_id) values ('Willian', 'willian@email.com', '$2b$10$eCFN.ZoLBL2dCgGGVMm49.46IuRhRdjSSQXw9m4AiBFgQEXJY06yO', 188);
 
 -- insert teams
-insert into teams (tea_name, tea_description, tea_admin_id) values ('Elite Runners', '...', 3);
+insert into teams (tea_name, tea_description) values ('Elite Runners', '...');
+
+-- team members
+insert into team_members (tme_tea_id, tme_usr_id, tme_is_admin) values (1, 3, true);
+insert into team_members (tme_tea_id, tme_usr_id) values (1, 1);
+insert into team_members (tme_tea_id, tme_usr_id) values (1, 2);
 
 commit;

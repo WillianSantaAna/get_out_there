@@ -18,8 +18,8 @@ module.exports.getTeams = async () => {
 
 module.exports.getTeam = async (id) => {
   try {
-    const sql = `select tea_id, tea_name, tea_description, tea_score, tea_admin_id, usr_name as tea_admin from teams t
-    inner join users on tea_admin_id = usr_id where tea_open is true and tea_id = $1`;
+    const sql = `select tea_id, tea_name, tea_description, tea_score from teams t
+      where tea_open is true and tea_id = $1`;
     id = parseInt(id);
 
     if (typeof id === "number" && !isNaN(id)) {
@@ -27,6 +27,7 @@ module.exports.getTeam = async (id) => {
 
       if (result.rowCount > 0) {
         result = result.rows[0];
+        
         return { status: 200, result };
       }
     }
@@ -43,8 +44,8 @@ module.exports.getTeam = async (id) => {
 
 module.exports.getTeamMembers = async (id) => {
   try {
-    const sql = `select tme_id, usr_name, usr_score from team_members inner join users on tme_usr_id = usr_id
-    where tme_tea_id = $1 and tme_active = true`;
+    const sql = `select tme_id, tme_usr_id, tme_is_admin, usr_name, usr_score from team_members inner join users on tme_usr_id = usr_id
+      where tme_tea_id = $1 and tme_active = true`;
 
     let result = await pool.query(sql, [id]);
 
@@ -93,9 +94,17 @@ module.exports.getTeamSchedule = async (id, scheduleId) => {
       "select tc.*, c.* from team_circuits tc inner join circuits c on tci_cir_id = cir_id where tci_id = $1 and tci_completed = false and tci_date >= current_date";
 
     let result = await pool.query(sql, [scheduleId]);
-    result = result.rows[0];
 
-    return { status: 200, result };
+    if (result.rowCount > 0) {
+      result = result.rows[0];
+
+      return { status: 200, result };
+    }
+
+    return {
+      status: 404,
+      result: { msg: `Team Schedule with id ${scheduleId} not found` },
+    };
   } catch (error) {
     console.log(error);
     return { status: 500, result: error };
@@ -104,20 +113,19 @@ module.exports.getTeamSchedule = async (id, scheduleId) => {
 
 module.exports.addTeam = async (team) => {
   try {
-    const { name, description, adminId } = team;
+    const { name, description, userId } = team;
 
     if (name === "") {
       return { status: 400, result: "Team name can't be empty" };
     } else if (description === "") {
       return { status: 400, result: "Team description can't be empty" };
-    } else if (isNaN(adminId)) {
+    } else if (isNaN(userId)) {
       return { status: 400, result: "Invalid administrator ID" };
     }
 
-    const sql =
-      "insert into teams (tea_name, tea_description, tea_admin_id) values ($1, $2, $3) returning tea_id";
+    const sql = "call create_team ($1, $2, $3)";
 
-    let result = await pool.query(sql, [name, description, adminId]);
+    let result = await pool.query(sql, [name, description, userId]);
 
     result = result.rows[0];
 
@@ -276,6 +284,28 @@ module.exports.joinTeam = async (userId, invitationCode) => {
       return {
         status: 404,
         result: `Invite with code ${invitationCode} not found`,
+      };
+    }
+  } catch (error) {
+    console.log(error);
+    return { status: 500, result: error };
+  }
+};
+
+module.exports.promoteMember = async (teamId, data) => {
+  try {
+    const { adminId, teamMemberId } = data;
+    const sql =
+      "update team_members set tme_is_admin = true where tme_id = $1 and tme_active = true and tme_tea_id in (select tme_tea_id from team_members where tme_tea_id = $2 and tme_usr_id = $3 and tme_is_admin = true and tme_active = true)";
+
+    let result = await pool.query(sql, [teamMemberId, teamId, adminId]);
+
+    if (result.rowCount > 0) {
+      return { status: 200, result };
+    } else {
+      return {
+        status: 404,
+        result: `Member with team member id ${id} not found`,
       };
     }
   } catch (error) {
