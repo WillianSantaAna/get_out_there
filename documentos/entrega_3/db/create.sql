@@ -152,6 +152,7 @@ ALTER TABLE IF EXISTS public.team_circuits
 END;
 
 -- Stored Procedures
+-- Create Team
 CREATE OR REPLACE PROCEDURE create_team(
 	team_name TEXT,
 	team_description TEXT,
@@ -160,8 +161,12 @@ CREATE OR REPLACE PROCEDURE create_team(
 )
 LANGUAGE plpgsql AS
 $$
-BEGIN
-	INSERT INTO teams (tea_name, tea_description) VALUES (team_name, team_description) RETURNING tea_id INTO team_id;
-	INSERT INTO team_members (tme_tea_id, tme_usr_id, tme_is_admin) VALUES (team_id, user_id, true);
+BEGIN	
+	IF NOT EXISTS(SELECT tme_id FROM team_members WHERE tme_usr_id = user_id AND tme_active = true) THEN
+		INSERT INTO teams (tea_name, tea_description) VALUES (team_name, team_description) RETURNING tea_id INTO team_id;
+		INSERT INTO team_members (tme_tea_id, tme_usr_id, tme_is_admin) VALUES (team_id, user_id, true);
+	ELSE
+		RAISE EXCEPTION 'id %', user_id USING HINT = 'EXCEPTION: User already has a team.';
+	END IF;
 END
 $$;
