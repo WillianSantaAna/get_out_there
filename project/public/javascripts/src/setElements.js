@@ -8,6 +8,8 @@ function setLocalStorageUser(user) {
 
 function removeLocalStorageUser() {
   localStorage.removeItem("user");
+  localStorage.removeItem("userCircuit");
+  localStorage.removeItem("teamCircuit");
 }
 
 function setNavbarAndFooter() {

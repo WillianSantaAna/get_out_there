@@ -36,8 +36,6 @@ window.onload = async () => {
 
   createMap();
 
-  await setTeamCircuits(user.tea_id);
-
   $(".save").hide();
 
   if (user) {

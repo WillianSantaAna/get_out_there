@@ -8,7 +8,6 @@ import {
   getCircuit,
   getUserCircuits,
   getUserScheduledCircuits,
-  getUserTeamCircuits,
   addUserScheduledCircuit,
   removeUserScheduledCircuit,
 } from "./src/apiMethods.js";
@@ -30,7 +29,7 @@ window.onload = async function () {
 
 async function fillCircuitSelect(circuits) {
   const id = getLocalStorageUser().usr_id;
-  let html = "";
+  let html = '<option value="none" selected disabled hidden>Select a circuit</option>';
   for (let c of circuits) {
     html += `<option value="${c.cir_id}">${c.cir_name}</option>`
   }
@@ -40,77 +39,72 @@ async function fillCircuitSelect(circuits) {
 async function showScheduledCircuits(circuits) {
   const userCircuits = await getUserScheduledCircuits();
 
-  let html = '<section class="row">';
-
-  for (let uc of userCircuits) {
-    let dt = new Date(uc.uci_date)
-    const cir_name = circuits.filter(c => c.cir_id == uc.uci_cir_id)[0].cir_name;
-    html +=
-      `<section class="col-sm-6 mb-3">
-        <section class="card">
-          <section class="card-body m-2">
-            <h4 class="card-title fs-3 mt-2">Solo run</h4>
-            <p class="card-text fs-5 my-1">${cir_name}</p>
-            <p class="card-text my-1">Scheduled for ${dt.toUTCString()}</p>
-            <a href="#" class="btn btn-primary my-2 me-2 view-circuit" data-id="${uc.uci_cir_id}">View circuit</a>
-            <a href="#" class="btn btn-danger my-2 unschedule" data-id="${uc.uci_id}">Unschedule</a>
-          </section>
-        </section>
-      </section>`;
-  }
-
-  const user = getLocalStorageUser();
-  if (user.tea_id != null) {
-    const teamCircuits = await getUserTeamCircuits();
-    for (let tc of teamCircuits) {
-      let dt = new Date(tc.tci_date)
-      const cir = await getCircuit(tc.tci_cir_id);
-      const cir_name = circuits.filter(c => c.cir_id == tc.tci_cir_id)[0].cir_name;
+  if (userCircuits.length > 0) {
+    let html = '<section class="row">';
+    for (let uc of userCircuits) {
+      const dt = new Date(uc.uci_date);
+      const diffDays = ((new Date() - dt) / (1000 * 60 * 60 * 24));
+      const cir_name = circuits.filter(c => c.cir_id == uc.uci_cir_id)[0].cir_name;
       html +=
         `<section class="col-sm-6 mb-3">
           <section class="card">
-            <section class="card-body">
-              <h4 class="card-title fs-3 mt-2">Team run</h4>
+            <section class="card-body m-2">
+              <h4 class="card-title fs-3 mt-2">Solo run</h4>
               <p class="card-text fs-5 my-1">${cir_name}</p>
-              <p class="card-text my-1">Scheduled for ${dt.toUTCString()}</p>
-              <a href="#" class="btn btn-primary my-2 me-2">View circuit</a>
+              <p class="card-text my-1">Scheduled for ${dt.toUTCString()}</p>`
+
+      if (diffDays >= 0 && diffDays <= 1) // if up to 1 day has passed since the scheduled time, you may run
+        html += `<a href="#" class="btn btn-success my-2 me-2 run-schedule" data-id="${uc.uci_cir_id}">Run</a>` 
+
+      html += 
+              `<a href="#" class="btn btn-danger my-2 unschedule" data-id="${uc.uci_id}">Unschedule</a>
+              </section>
             </section>
-          </section>
-        </section>`;
+          </section>`;
     }
+  
+    html += '</section>';
+    document.querySelector("#schedule").innerHTML = html;
+  
+    $(".run-schedule").on("click", runCircuit);
+    $(".unschedule").on("click", unschedule);
+  } else {
+    let html = '<section class="d-flex justify-content-center">';
+    html += '<p class="h4" style="color:grey;">No runs scheduled</p>'
+    html += '</section>';
+    document.querySelector("#schedule").innerHTML = html;
   }
-
-  html += '</section>';
-  document.querySelector("#schedule").innerHTML = html;
-
-  $(".view-circuit").on("click", viewCircuit);
-  $(".unschedule").on("click", unschedule);
 }
 
 async function submit() {
   const circuit_id = document.getElementById("select-circuit").value;
   const datetime = document.getElementById("input-datetime").value;
 
-  if (!datetime || !circuit_id) {
+  if (!datetime || !circuit_id || circuit_id == 'none') {
     alert("Please fill out the form completely before submitting");
   } else {
-    const data = {
-      datetime: datetime,
-      circuit_id: circuit_id
-    }
-    
-    try {
-      await addUserScheduledCircuit(data);
-    } catch (error) {
-      console.log(error);
+    console.log(datetime, new Date());
+    if (datetime < new Date().toISOString()) {
+      alert("Please select a future date");
+    } else {
+      const data = {
+        datetime: datetime,
+        circuit_id: circuit_id
+      }
+
+      try {
+        await addUserScheduledCircuit(data);
+      } catch (error) {
+        console.log(error);
+      }
     }
   }
 }
 
-async function viewCircuit(e) {
+async function runCircuit(e) {
   const id = e.currentTarget.dataset.id;
   const cir = await getCircuit(id);
-  localStorage.setItem("viewCircuit", JSON.stringify(cir));
+  localStorage.setItem("userCircuit", JSON.stringify(cir));
   window.location.replace("/circuit.html");
 }
 

@@ -1,5 +1,5 @@
 import { getLocalStorageUser, setLocalStorageUser } from "./src/setElements.js";
-import { getCountries, getUserTypes, createUser } from "./src/apiMethods.js";
+import { getCountries, createUser } from "./src/apiMethods.js";
 
 window.onload = async () => {
   if (getLocalStorageUser()) {

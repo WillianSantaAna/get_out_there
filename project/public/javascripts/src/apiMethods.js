@@ -164,22 +164,7 @@ async function login(user) {
   }
 }
 
-async function getUserTeamCircuits() {
-  const user = getLocalStorageUser();
-  if (user.tea_id != null) {
-    try {
-      const result = await $.ajax({
-        url: `/api/teams/${user.tea_id}/circuits`,
-        method: "get",
-        dataType: "json",
-      });
-      return result;
-    } catch (error) {
-      return error;
-    }
-  }
-}
-
+// user schedule api methods
 async function getUserScheduledCircuits() {
   const user = getLocalStorageUser();
   try {
@@ -410,7 +395,6 @@ export {
   removeUserCircuit,
   removeTeamCircuit,
   getUserScheduledCircuits,
-  getUserTeamCircuits,
   addUserScheduledCircuit,
   removeUserScheduledCircuit,
   getTeam,
