@@ -92,6 +92,13 @@ router.put("/:uid/schedule/:sid", async (req, res) => {
   res.status(status).send(result);
 });
 
+router.get("/:id/schedule/calendar", async (req, res) => {
+  const id = req.params.id
+  const { status, result } = await userModel.getScheduledCircuitsAsCalendarEvents(id);
+
+  res.status(status).send(result);
+});
+
 router.put("/:id/team/:teamId/leave", async (req, res) => {
   let id = req.params.id;
   let teamId = req.params.teamId;

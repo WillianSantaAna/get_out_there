@@ -68,6 +68,7 @@ async function showScheduledCircuits(circuits) {
   
     $(".run-schedule").on("click", runCircuit);
     $(".unschedule").on("click", unschedule);
+    
   } else {
     let html = '<section class="d-flex justify-content-center">';
     html += '<p class="h4" style="color:grey;">No runs scheduled</p>'
@@ -77,10 +78,10 @@ async function showScheduledCircuits(circuits) {
 }
 
 async function submit() {
-  const circuit_id = document.getElementById("select-circuit").value;
   const datetime = document.getElementById("input-datetime").value;
+  const circuit_id = document.getElementById("select-circuit").value;
 
-  if (!datetime || !circuit_id || circuit_id == 'none') {
+  if (!datetime || circuit_id == 'none') {
     alert("Please fill out the form completely before submitting");
   } else {
     console.log(datetime, new Date());

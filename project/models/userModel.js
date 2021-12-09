@@ -209,6 +209,30 @@ module.exports.getScheduledCircuits = async function (id) {
   }
 };
 
+module.exports.getScheduledCircuitsAsCalendarEvents = async function (id) {
+  try {
+    const sql =
+      "SELECT * FROM user_circuits WHERE uci_usr_id = $1 AND uci_completed = false AND uci_active = true AND uci_date >= current_date - INTERVAL '1 DAY' ORDER BY uci_date ASC;";
+    let result = await pool.query(sql, [id]);
+
+    result = result.rows;
+    let events = [];
+
+    const circuits = await this.getUserCircuits(id);
+    for (let uc of result) {
+      const cir_name = circuits.result.filter(c => c.cir_id == uc.uci_cir_id)[0].cir_name;
+      events.push({
+        'title': cir_name,
+        'start': uc.uci_date
+      });
+    }
+
+    return { status: 200, result: events };
+  } catch (error) {
+    return { status: 500, result: error };
+  }
+};
+
 module.exports.addScheduledCircuit = async function (id, data) {
   let dt = new Date(data.datetime);
   if (dt > new Date()) {
