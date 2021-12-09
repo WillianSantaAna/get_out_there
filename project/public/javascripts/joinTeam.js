@@ -20,16 +20,20 @@ window.onload = async () => {
             data: JSON.stringify({
               name: teamName,
               description: teamDescription,
-              adminId: user.usr_id
+              userId: user.usr_id
             }),
             dataType: "json",
             contentType: "application/json",
           });
-    
-          user.tea_id = result.tea_id;
-  
-          setLocalStorageUser(user);
-          window.location.replace("/team.html");
+          
+          if (result) {
+            user.tea_id = result.team_id;
+            setLocalStorageUser(user);
+
+            location.replace("/team.html");
+          } else {
+            console.log(result)
+          }
   
         } catch (error) {
           console.log(error.responseText)

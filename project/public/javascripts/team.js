@@ -10,6 +10,7 @@ import {
   addInvite,
   promoteMember,
   kickMember,
+  leaveTeam,
   getTeamSchedule,
   removeTeamCircuit,
   getTeamCircuits,
@@ -151,15 +152,15 @@ window.onload = async () => {
 
       $("#leave").on("click", async () => {
         try {
-          const result = await kickMember(user.usr_id, user.tea_id);
+          const result = await leaveTeam(user.usr_id, user.tea_id);
 
           if (result) {
             user.tea_id = null;
             setLocalStorageUser(user);
-            window.location.reload();
+            location.reload();
           }
         } catch (error) {
-          console.log(error.responseText);
+          console.log(error);
         }
       });
 
@@ -226,11 +227,11 @@ async function setTeamSchedules(teamId) {
   const schedules = await getTeamSchedules(teamId);
 
   let scheduleHtml = "";
-
+  
   for (let schedule of schedules) {
     scheduleHtml += `<section class="d-flex justify-content-between align-items-center">
       <p class="fw-bold fs-4 mb-0">${schedule.cir_name}</p>
-      <button class="btn main-blue-bg p-2 run-schedule" data-id="${schedule.tci_id}"><i class="las la-running fs-3 main-white d-flex"></i></i></button>
+      ${new Date() > new Date(schedule.tci_date.substr(0,10)) ? `<button class="btn main-blue-bg p-2 run-schedule" data-id="${schedule.tci_id}"><i class="las la-running fs-3 main-white d-flex"></i></i></button>`:``}
     </section>`;
   }
 

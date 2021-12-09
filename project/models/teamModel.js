@@ -76,7 +76,7 @@ module.exports.getTeamCircuits = async (id) => {
 module.exports.getTeamSchedules = async (id) => {
   try {
     const sql =
-      "select tci_id, cir_name from team_circuits inner join circuits on tci_cir_id = cir_id where tci_tea_id = $1 and tci_completed = false and tci_active = true and tci_date >= current_date;";
+      "select tci_id, cir_name, tci_date from team_circuits inner join circuits on tci_cir_id = cir_id where tci_tea_id = $1 and tci_completed = false and tci_active = true and tci_date >= current_date;";
 
     let result = await pool.query(sql, [id]);
     result = result.rows;
@@ -127,9 +127,13 @@ module.exports.addTeam = async (team) => {
 
     let result = await pool.query(sql, [name, description, userId]);
 
-    result = result.rows[0];
-
-    return { status: 200, result };
+    if (result.rows.length > 0) {
+      result = result.rows[0];
+      
+      return { status: 200, result };
+    } else {
+      return {status: 400, result: {msg: 'Bad request'}};
+    }
   } catch (error) {
     console.log(error);
     return { status: 500, result: error };
