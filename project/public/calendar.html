@@ -29,11 +29,23 @@
   <link href='https://cdn.jsdelivr.net/npm/fullcalendar@5.10.1/main.min.css' rel='stylesheet' />
   <script src='https://cdn.jsdelivr.net/npm/fullcalendar@5.10.1/main.min.js'></script>
 
-  <!--script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.9.0/fullcalendar.min.css" />
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.9.0/fullcalendar.min.js"></script-->
+  <style>
+    /*
+    .fc .fc-daygrid-body {
+      background-color: rgba(255, 255, 255, 0.7);
+    }
+    */
 
+    tbody, td, tfoot, th, thead, tr {
+      border: 1px solid rgba(102, 117, 136, 0.3);
+    }
+
+    .fc-theme-standard td, .fc-theme-standard th {
+      border: 1px solid rgba(102, 117, 136, 0.3);
+      border-bottom: none;
+      border-right: none;
+    }
+  </style>
 </head>
 
 <body>
@@ -68,10 +80,12 @@
   <!-- Main -->
   <main class="container py-5">
     <section id="calendar"></section>
-    
-    <section class="modal fade" id="schedule-modal" tabindex="-1" role="dialog" aria-labelledby="schedule-modal-label" aria-hidden="true">
-      <section class="modal-dialog" role="document">
-        <section class="modal-content"> 
+
+    <!-- Schedule modal -->
+    <section class="modal fade" id="schedule-modal" tabindex="-1" role="dialog" aria-labelledby="schedule-modal-label"
+      aria-hidden="true">
+      <section class="modal-dialog modal-dialog-centered" role="document">
+        <section class="modal-content">
           <section class="modal-header">
             <h5 class="modal-title" id="schedule-modal-label"></h5>
           </section>
@@ -79,7 +93,7 @@
             <form>
               <section class="form-group">
                 <label for="input-time" class="col-form-label">Select a time:</label>
-                <input type="time" id="input-time" class="form-select" name="input-time"/>
+                <input type="time" id="input-time" class="form-select" name="input-time" />
                 <br>
                 <label for="select-circuit" class="col-form-label">Select a circuit:</label>
                 <select id="select-circuit" class="form-select" name="select-circuit"></select>
@@ -88,6 +102,23 @@
           </section>
           <section class="modal-footer">
             <button type="button" id="submit" class="btn btn-success">Submit</button>
+          </section>
+        </section>
+      </section>
+    </section>
+
+    <!-- Event modal -->
+    <section class="modal fade" id="event-modal" tabindex="-1" role="dialog" aria-labelledby="event-modal-label"
+      aria-hidden="true">
+      <section class="modal-dialog modal-dialog-centered" role="document">
+        <section class="modal-content">
+          <section class="modal-header">
+            <h5 class="modal-title" id="event-modal-label"></h5>
+          </section>
+          <section class="modal-body d-flex justify-content-center">
+            <p id="circuit-name" class="h6"></p>
+          </section>
+          <section id="event-modal-footer" class="modal-footer">
           </section>
         </section>
       </section>

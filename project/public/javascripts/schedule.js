@@ -84,7 +84,7 @@ async function submit() {
   if (!datetime || circuit_id == 'none') {
     alert("Please fill out the form completely before submitting");
   } else {
-    console.log(datetime, new Date());
+    console.log(datetime, new Date().toISOString());
     if (datetime < new Date().toISOString()) {
       alert("Please select a future date");
     } else {

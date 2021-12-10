@@ -223,7 +223,11 @@ module.exports.getScheduledCircuitsAsCalendarEvents = async function (id) {
       const cir_name = circuits.result.filter(c => c.cir_id == uc.uci_cir_id)[0].cir_name;
       events.push({
         'title': cir_name,
-        'start': uc.uci_date
+        'start': uc.uci_date,
+        'id': uc.uci_id,
+        extendedProps: {
+          'circuitId': uc.uci_cir_id,
+        }        
       });
     }
 
