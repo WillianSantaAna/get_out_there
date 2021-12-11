@@ -209,7 +209,7 @@ module.exports.removeUserCircuit = async (userId, circuitId) => {
 module.exports.getScheduledCircuits = async function (id) {
   try {
     const sql =
-      "SELECT * FROM user_circuits WHERE uci_usr_id = $1 AND uci_completed = false AND uci_active = true AND uci_date >= current_date - INTERVAL '1 DAY' ORDER BY uci_date ASC;";
+      "SELECT * FROM user_circuits WHERE uci_usr_id = $1 AND uci_completed = false AND uci_active = true AND uci_date >= NOW() - INTERVAL '1 DAY' ORDER BY uci_date ASC;";
     let result = await pool.query(sql, [id]);
 
     result = result.rows;
@@ -223,7 +223,7 @@ module.exports.getScheduledCircuits = async function (id) {
 module.exports.getScheduledCircuitsAsCalendarEvents = async function (id) {
   try {
     const sql =
-      "SELECT * FROM user_circuits WHERE uci_usr_id = $1 AND uci_completed = false AND uci_active = true AND uci_date >= current_date - INTERVAL '1 DAY' ORDER BY uci_date ASC;";
+      "SELECT * FROM user_circuits WHERE uci_usr_id = $1 AND uci_completed = false AND uci_active = true AND uci_date >= NOW() - INTERVAL '1 DAY' ORDER BY uci_date ASC;";
     let result = await pool.query(sql, [id]);
 
     result = result.rows;
@@ -238,9 +238,6 @@ module.exports.getScheduledCircuitsAsCalendarEvents = async function (id) {
         title: cir_name,
         start: uc.uci_date,
         id: uc.uci_id,
-        extendedProps: {
-          circuitId: uc.uci_cir_id,
-        },
       });
     }
 
@@ -250,12 +247,10 @@ module.exports.getScheduledCircuitsAsCalendarEvents = async function (id) {
   }
 };
 
-module.exports.addScheduledCircuit = async function (id, data) {
+module.exports.scheduleUserCircuit = async function (id, data) {
   let dt = new Date(data.datetime);
   if (dt > new Date()) {
-    const dtformat = `${dt.getFullYear()}-${
-      dt.getMonth() + 1
-    }-${dt.getDate()} ${dt.getHours()}:${dt.getMinutes()}:00`;
+    const dtformat = `${dt.getFullYear()}-${dt.getMonth() + 1}-${dt.getDate()} ${dt.getHours()}:${dt.getMinutes()}:00`;
     const cid = parseInt(data.circuit_id);
     const uid = parseInt(id);
 
@@ -282,14 +277,46 @@ module.exports.addScheduledCircuit = async function (id, data) {
       return { status: 500, result: error };
     }
   } else {
-    return {
-      status: 400,
-      result: `cannot schedule circuit for a past date (${dt})`,
-    };
+    return { status: 400, result: { msg: `cannot schedule circuit for a past date (${dt})`} };
   }
 };
 
-module.exports.removeScheduledCircuit = async function (userId, scheduleId) {
+module.exports.rescheduleUserCircuit = async function (userId, scheduleId, data) {
+  let dt = new Date(data.newdatetime);
+  if (dt > new Date()) {
+
+    const dtformat = `${dt.getFullYear()}-${dt.getMonth() + 1}-${dt.getDate()} ${dt.getHours()}:${dt.getMinutes()}:00`;
+    const uid = parseInt(userId);
+    const sid = parseInt(scheduleId);
+
+    if (typeof dtformat != "string") {
+      return { status: 400, result: { msg: "Malformed data" } };
+    }
+
+    if (typeof uid != "number" || uid <= 0) {
+      return { status: 400, result: { msg: "Malformed data" } };
+    }
+
+    if (typeof sid != "number" || sid <= 0) {
+      return { status: 400, result: { msg: "Malformed data" } };
+    }
+
+    try {
+      const sql = `UPDATE user_circuits SET uci_date = timestamp '${dtformat}' where uci_id = $1 AND uci_usr_id = $2;`;
+      let res = await pool.query(sql, [sid, uid]);
+      result = res.rows[0];
+
+      return { status: 200, result: result };
+    } catch (error) {
+      console.log(error);
+      return { status: 500, result: error };
+    }
+  } else {
+    return { status: 400, result: { msg: `cannot schedule circuit for a past date (${dt})`} };
+  }
+};
+
+module.exports.unscheduleUserCircuit = async function (userId, scheduleId) {
   const uid = parseInt(userId);
   const sid = parseInt(scheduleId);
 

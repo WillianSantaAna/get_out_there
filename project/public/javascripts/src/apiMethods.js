@@ -188,7 +188,7 @@ async function getUserScheduledCircuits() {
   }
 }
 
-async function addUserScheduledCircuit(data) {
+async function scheduleUserCircuit(data) {
   const user = getLocalStorageUser();
   try {
     const result = await $.ajax({
@@ -204,14 +204,30 @@ async function addUserScheduledCircuit(data) {
   }
 }
 
-async function removeUserScheduledCircuit(sid) {
+async function rescheduleUserCircuit(sid, data) {
   const user = getLocalStorageUser();
   try {
     const result = await $.ajax({
       url: `/api/users/${user.usr_id}/schedule/${sid}`,
       method: "put",
-    });
-    return result;
+      data: JSON.stringify(data),
+      dataType: "json",
+      contentType: "application/json",
+    })
+  return result;
+  } catch (error) {
+    return error;
+  }
+}
+
+async function unscheduleUserCircuit(sid) {
+  const user = getLocalStorageUser();
+  try {
+    const result = await $.ajax({
+      url: `/api/users/${user.usr_id}/schedule/${sid}`,
+      method: "delete",
+    })
+  return result;
   } catch (error) {
     return error;
   }
@@ -404,8 +420,9 @@ export {
   removeUserCircuit,
   removeTeamCircuit,
   getUserScheduledCircuits,
-  addUserScheduledCircuit,
-  removeUserScheduledCircuit,
+  scheduleUserCircuit,
+  rescheduleUserCircuit,
+  unscheduleUserCircuit,
   getTeam,
   getTeamMembers,
   getTeamSchedules,

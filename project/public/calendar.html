@@ -30,14 +30,8 @@
   <script src='https://cdn.jsdelivr.net/npm/fullcalendar@5.10.1/main.min.js'></script>
 
   <style>
-    /*
-    .fc .fc-daygrid-body {
-      background-color: rgba(255, 255, 255, 0.7);
-    }
-    */
-
-    tbody, td, tfoot, th, thead, tr {
-      border: 1px solid rgba(102, 117, 136, 0.3);
+    .fc-daygrid-day:hover {
+      background-color: rgba(255, 255, 255, 0.5);
     }
 
     .fc-theme-standard td, .fc-theme-standard th {
@@ -116,9 +110,26 @@
             <h5 class="modal-title" id="event-modal-label"></h5>
           </section>
           <section class="modal-body d-flex justify-content-center">
-            <p id="circuit-name" class="h6"></p>
+            <p id="circuit-info" class="h6"></p>
           </section>
           <section id="event-modal-footer" class="modal-footer">
+          </section>
+        </section>
+      </section>
+    </section>
+
+    <!-- Reshedule modal -->
+    <section class="modal fade" id="reschedule-modal" tabindex="-1" role="dialog" aria-labelledby="reschedule-modal-label"
+      aria-hidden="true">
+      <section class="modal-dialog modal-dialog-centered" role="document">
+        <section class="modal-content">
+          <section class="modal-header">
+            <h5 class="modal-title" id="reschedule-modal-label">Confirm change?</h5>
+          </section>
+          <section class="modal-body d-flex justify-content-center">
+            <p id="reschedule-info" class="h6"></p>
+          </section>
+          <section id="reschedule-modal-footer" class="modal-footer">
           </section>
         </section>
       </section>

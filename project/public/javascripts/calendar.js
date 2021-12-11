@@ -5,10 +5,10 @@ import {
 } from "./src/setElements.js";
 
 import {
-  getCircuit,
   getUserCircuits,
-  addUserScheduledCircuit,
-  removeUserScheduledCircuit,
+  scheduleUserCircuit,
+  rescheduleUserCircuit,
+  unscheduleUserCircuit,
 } from "./src/apiMethods.js";
 
 $("#sign-out").on("click", () => { removeLocalStorageUser() });
@@ -17,7 +17,7 @@ window.onload = async function () {
   const user = getLocalStorageUser();
   if (user) {
     setNavbarAndFooter();
-    fillCircuitSelect();
+    fillCircuitSelectEl();
 
     $("#submit").on("click", () => { submit() });
 
@@ -36,6 +36,7 @@ document.addEventListener('DOMContentLoaded', function () {
     initialView: 'dayGridMonth',
     height: 'auto',
     events: `/api/users/${user.usr_id}/schedule/calendar`,
+    eventStartEditable: true,
 
     dateClick: function (info) {
       let dt = new Date();
@@ -53,30 +54,51 @@ document.addEventListener('DOMContentLoaded', function () {
 
     eventClick: function (info) {
       document.querySelector('#event-modal-label').innerHTML = 'Solo run scheduled for ' + info.event.start.toUTCString().slice(0, 16);
-      document.querySelector('#circuit-name').innerHTML = info.event.title + ', ' + info.event.start.toISOString().slice(11,16);
+      document.querySelector('#circuit-info').innerHTML = info.event.title + ', ' + info.event.start.toISOString().slice(11, 16);
 
       let html = "";
       const dt = new Date(info.event.start);
       const diffDays = ((new Date() - dt) / (1000 * 60 * 60 * 24));
       if (diffDays >= 0 && diffDays <= 1)
-        html = `<a href="#" id="run-schedule" class="btn btn-success my-2 me-2" data-id="${info.event.extendedProps.circuitId}">Run</a>`
-      html += `<a href="#" id="unschedule" class="btn btn-danger my-2" data-id="${info.event.id}">Unschedule</a>`
+        html = `<a href="#" id="run-schedule" class="btn btn-success my-2 me-2" data-id="${info.event.id}">Run</a>`
+      html += `<a href="#" id="unschedule" class="btn btn-danger my-2" onclick="return false;" data-id="${info.event.id}">Unschedule</a>`
       document.querySelector('#event-modal-footer').innerHTML = html;
 
       $("#run-schedule").on("click", runCircuit);
       $("#unschedule").on("click", unschedule);
-      
+
       $('#event-modal').modal('show');
+    },
+
+    eventDrop: function (info) {
+      const sid = info.event.id;
+      const newdatetime = info.event.start;
+
+      let dt = new Date();
+      if (newdatetime > dt.setDate(dt.getDate() - 1)) {
+        document.querySelector('#reschedule-info').innerHTML = info.oldEvent.start.toUTCString().slice(0, 16) + " → " + info.event.start.toUTCString().slice(0, 16);
+
+        let html =
+          `<a href="#" id="cancel-reschedule" class="btn btn-danger my-2" onclick="window.location.reload(); return false;">Cancel</a>` +
+          `<a href="#" id="confirm-reschedule" class="btn btn-success my-2" onclick="$('#reschedule-modal').modal('hide'); return false;" data-id="${sid}" data-newdatetime="${newdatetime}">Confirm</a>`
+        document.querySelector('#reschedule-modal-footer').innerHTML = html;
+
+        $("#confirm-reschedule").on("click", reschedule);
+
+        $('#reschedule-modal').modal('show');
+      } else {
+        info.revert();
+      }
     },
   });
 
   calendar.render();
 });
 
-async function fillCircuitSelect() {
+async function fillCircuitSelectEl() {
   const user = getLocalStorageUser();
   const circuits = await getUserCircuits(user.usr_id);
-  let html = '<option value="none" selected disabled hidden>Select a circuit</option>';
+  let html = '<option value="none" selected disabled hidden></option>';
   for (let c of circuits) {
     html += `<option value="${c.cir_id}">${c.cir_name}</option>`
   }
@@ -107,7 +129,7 @@ async function submit() {
       }
 
       try {
-        const res = await addUserScheduledCircuit(data);
+        const res = await scheduleUserCircuit(data);
         return res;
       } catch (error) {
         console.log(error);
@@ -118,10 +140,24 @@ async function submit() {
 }
 
 async function runCircuit(e) {
-  const id = e.currentTarget.dataset.id;
-  const cir = await getCircuit(id);
-  localStorage.setItem("userCircuit", JSON.stringify(cir));
+  const sid = e.currentTarget.dataset.id;
+  localStorage.setItem("userCircuit", sid);
   window.location.replace("/circuit.html");
+}
+
+async function reschedule(e) {
+  const sid = e.currentTarget.dataset.id;
+  const newdatetime = e.currentTarget.dataset.newdatetime;
+
+  try {
+    const data = {
+      newdatetime: newdatetime,
+    }
+    const res = await rescheduleUserCircuit(sid, data);
+    return res;
+  } catch (err) {
+    console.log(err)
+  }
 }
 
 async function unschedule(e) {
@@ -129,13 +165,11 @@ async function unschedule(e) {
 
   if (confirm('Are you sure you want to unschedule this run?')) {
     try {
-      const res = await removeUserScheduledCircuit(sid);
+      const res = await unscheduleUserCircuit(sid);
       window.location.reload();
       return res;
     } catch (err) {
       console.log(err)
     }
-  } else {
-    // Do nothing!
   }
 }
