@@ -1,4 +1,9 @@
-import { getTeam, getUser, getUsersLeaderboard } from "./src/apiMethods.js";
+import {
+  getTeam,
+  getTeamsLeaderboard,
+  getUser,
+  getUsersLeaderboard,
+} from "./src/apiMethods.js";
 import {
   removeLocalStorageUser,
   getLocalStorageUser,
@@ -9,7 +14,9 @@ $("#sign-out").on("click", () => {
 });
 
 let currentPage = 1;
-let totalPages;
+let totalPages = 0;
+let count = 10;
+let leaderboardType = "users";
 
 window.onload = async () => {
   if (!getLocalStorageUser()) {
@@ -30,38 +37,37 @@ window.onload = async () => {
     $("#team-name").text(team.tea_name);
   }
 
-  const count = $(".count").val();
-
   const leaderboard = await getUsersLeaderboard(currentPage - 1, count);
-
-  setLeaderboardUsers(leaderboard.users);
 
   totalPages = leaderboard.totalPages;
 
-  setPaginationBtns(totalPages);
+  setLeaderboardUsers(leaderboard.users);
 
-  $(".count").on("click", async () => {
-    currentPage = 1;
-    const count = $(".count").val();
+  $(".leaderboard-btn").on("click", async (e) => {
+    if (e.currentTarget.dataset.value) {
+      count = parseInt(e.currentTarget.dataset.value);
+      currentPage = 1;
+    }
 
-    const leaderboard = await getUsersLeaderboard(currentPage - 1, count);
+    const typeChecked = $("input[name='leaderboard-type']:checked").attr("id");
 
-    setLeaderboardUsers(leaderboard.users);
+    if (leaderboardType !== typeChecked) {
+      leaderboardType = typeChecked;
+      currentPage = 1;
+    }
 
-    totalPages = leaderboard.totalPages;
-
-    setPaginationBtns(totalPages);
-  });
-
-  $(".btn").on("click", () => {
-    console.log("toDo");
-    alert("toDo");
+    setLeaderTable();
   });
 };
 
 function setLeaderboardUsers(users) {
+  $("table thead").html(`<tr>
+            <th scope="col">#</th>
+            <th scope="col">Name</th>
+            <th scope="col">Team</th>
+            <th scope="col">KMs</th>
+          </tr>`);
   $("table tbody").html("");
-  const count = $(".count").val();
 
   const { usr_id } = getLocalStorageUser();
 
@@ -75,31 +81,78 @@ function setLeaderboardUsers(users) {
             <td>${user.usr_score}</td>
           </tr$>`);
   });
+
+  setPaginationBtns();
 }
 
-function setPaginationBtns(totalPages) {
+function setLeaderboardTeams(teams) {
+  $("table thead").html(`<tr>
+            <th scope="col">#</th>
+            <th scope="col">Team Name</th>
+            <th scope="col">KMs</th>
+          </tr>`);
+  $("table tbody").html("");
+
+  const { tea_id } = getLocalStorageUser();
+
+  teams.forEach((team, index) => {
+    $("table tbody").append(`<tr${
+      team.tea_id == tea_id ? ` class="table-active"` : ""
+    }>
+            <th scope="row">${(currentPage - 1) * count + (index + 1)}</th>
+            <td>${team.tea_name}</td>
+            <td>${team.tea_score}</td>
+          </tr$>`);
+  });
+
+  setPaginationBtns();
+}
+
+function setPaginationBtns() {
   $(".pagination").html("");
 
-  $(".pagination")
-    .append(`<li role="button" class="page-item align-self-center" style="margin-left: 0">
-            <a class="page-link" data-id="prev">Previous</a>
-          </li>`);
-
-  for (let i = 1; i <= totalPages; i++) {
+  if (totalPages > 1) {
     $(".pagination")
-      .append(`<li role="button" class="page-item align-self-center${
-      currentPage === i ? " active" : ""
-    }" style="margin-left: 0">
-            <a class="page-link" data-id="${i}">${i}</a>
-          </li>`);
+      .append(`<li role="button" class="page-item align-self-center mx-0">
+              <a class="page-link" data-id="prev">
+                <i class="las la-angle-double-left"></i>
+              </a>
+            </li>`);
+
+    for (let i = 1; i <= totalPages; i++) {
+      $(".pagination")
+        .append(`<li role="button" class="page-item align-self-center mx-0${
+        currentPage === i ? " active main-white" : ""
+      }">
+              <a class="page-link" data-id="${i}">${i}</a>
+            </li>`);
+    }
+
+    $(".pagination")
+      .append(`<li role="button" class="page-item align-self-center mx-0">
+              <a class="page-link pe-auto" data-id="next">
+                <i class="las la-angle-double-right"></i>
+              </a>
+            </li>`);
+
+    $(".page-link").on("click", handlePaginationBtn);
   }
+}
 
-  $(".pagination")
-    .append(`<li role="button" class="page-item align-self-center mx-0">
-            <a class="page-link pe-auto" data-id="next">Previous</a>
-          </li>`);
+async function setLeaderTable() {
+  if (leaderboardType === "users") {
+    const leaderboard = await getUsersLeaderboard(currentPage - 1, count);
 
-  $(".page-link").on("click", handlePaginationBtn);
+    totalPages = leaderboard.totalPages;
+
+    setLeaderboardUsers(leaderboard.users);
+  } else if (leaderboardType === "teams") {
+    const leaderboard = await getTeamsLeaderboard(currentPage - 1, count);
+
+    totalPages = leaderboard.totalPages;
+
+    setLeaderboardTeams(leaderboard.teams);
+  }
 }
 
 async function handlePaginationBtn(e) {
@@ -119,12 +172,9 @@ async function handlePaginationBtn(e) {
     currentPage = 1;
   }
 
-  $(".page-item").removeClass("active");
+  $(".page-item").removeClass("active main-white");
 
-  $(`a[data-id~="${currentPage}"]`).parent().addClass("active");
-  const count = $(".count").val();
+  $(`a[data-id~="${currentPage}"]`).parent().addClass("active main-white");
 
-  const pageLeaderboard = await getUsersLeaderboard(currentPage - 1, count);
-
-  setLeaderboardUsers(pageLeaderboard.users);
+  setLeaderTable();
 }

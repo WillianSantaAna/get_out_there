@@ -8,6 +8,13 @@ router.get("/", async (req, res) => {
   res.status(status).send(result);
 });
 
+router.get("/leaderboard", async (req, res) => {
+  const { page, count } = req.query;
+  const { status, result } = await teamModel.getTeamsLeaderboard(count, page);
+
+  res.status(status).send(result);
+});
+
 router.get("/:id", async (req, res) => {
   const id = req.params.id;
   const { status, result } = await teamModel.getTeam(id);

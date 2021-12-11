@@ -16,6 +16,32 @@ module.exports.getTeams = async () => {
   }
 };
 
+module.exports.getTeamsLeaderboard = async (count = 10, page = 0) => {
+  try {
+    const count_sql = `SELECT COUNT(*) AS total_count FROM teams;`;
+    const teams_sql = `SELECT tea_id, tea_name, tea_score
+	      FROM teams
+	      ORDER BY tea_score DESC
+		    LIMIT $1
+		    OFFSET $2;`;
+
+    let count_result = await pool.query(count_sql);
+    let teams_result = await pool.query(teams_sql, [count, count * page]);
+
+    const result = {
+      totalCount: count_result.rows[0].total_count,
+      teams: teams_result.rows,
+      totalPages: Math.ceil(count_result.rows[0].total_count / count),
+      currentPage: parseInt(page),
+    };
+
+    return { status: 200, result };
+  } catch (error) {
+    console.log(error);
+    return { status: 500, result: error };
+  }
+};
+
 module.exports.getTeam = async (id) => {
   try {
     const sql = `select tea_id, tea_name, tea_description, tea_score from teams t
@@ -27,7 +53,7 @@ module.exports.getTeam = async (id) => {
 
       if (result.rowCount > 0) {
         result = result.rows[0];
-        
+
         return { status: 200, result };
       }
     }
@@ -129,10 +155,10 @@ module.exports.addTeam = async (team) => {
 
     if (result.rows.length > 0) {
       result = result.rows[0];
-      
+
       return { status: 200, result };
     } else {
-      return {status: 400, result: {msg: 'Bad request'}};
+      return { status: 400, result: { msg: "Bad request" } };
     }
   } catch (error) {
     console.log(error);

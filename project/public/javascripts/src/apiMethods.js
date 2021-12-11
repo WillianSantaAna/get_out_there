@@ -50,6 +50,29 @@ async function getUsersLeaderboard(page, count) {
   }
 }
 
+async function getTeamsLeaderboard(page, count) {
+  try {
+    let url = `/api/teams/leaderboard?`;
+    if (count) {
+      url += `count=${count}&`;
+    }
+
+    if (page) {
+      url += `page=${page}`;
+    }
+
+    const teams = await $.ajax({
+      url,
+      method: "get",
+      dataType: "json",
+    });
+
+    return teams;
+  } catch (error) {
+    return error;
+  }
+}
+
 async function getUserCircuits(id) {
   try {
     const result = await $.ajax({
@@ -213,8 +236,8 @@ async function rescheduleUserCircuit(sid, data) {
       data: JSON.stringify(data),
       dataType: "json",
       contentType: "application/json",
-    })
-  return result;
+    });
+    return result;
   } catch (error) {
     return error;
   }
@@ -226,8 +249,8 @@ async function unscheduleUserCircuit(sid) {
     const result = await $.ajax({
       url: `/api/users/${user.usr_id}/schedule/${sid}`,
       method: "delete",
-    })
-  return result;
+    });
+    return result;
   } catch (error) {
     return error;
   }
@@ -413,6 +436,7 @@ export {
   login,
   getUser,
   getUsersLeaderboard,
+  getTeamsLeaderboard,
   getCircuits,
   getCircuit,
   addCircuit,

@@ -91,6 +91,7 @@
     </header>
     <!-- Main -->
     <main class="container">
+      <!-- user card -->
       <section class="card my-5">
         <section class="card-body px-md-5">
           <section id="user-info" class="row d-flex justify-content-between">
@@ -99,7 +100,7 @@
                 <i class="las la-user-circle team-icon"></i>
                 <section class="d-flex flex-column align-items-start">
                   <h2 id="user-name" class="card-title fw-bold mb-0"></h2>
-                  <h4 id="team-name" class="card-title fw-bold mb-0"></h4>
+                  <h4 id="team-name" class="card-title fw-bold mb-0">-</h4>
                 </section>
               </section>
             </section>
@@ -114,28 +115,53 @@
           </section>
         </section>
       </section>
-      <nav class="my-5 justify-content-between d-flex">
-        <section class="col-3 col-md-2 col-lg-1">
-          <select class="form-select count">
-            <option value="10">10</option>
-            <option value="20">20</option>
-          </select>
-        </section>
-        <section class="">
-          <input type="button" class="btn btn-primary col" value="Teams" />
-        </section>
-      </nav>
+      <!-- btns -->
+      <div class="btn-group mb-5" role="group">
+        <input
+          type="radio"
+          class="btn-check leaderboard-btn"
+          name="leaderboard-type"
+          id="users"
+          autocomplete="off"
+          checked
+        />
+        <label class="btn btn-outline-primary" for="users">Users</label>
+
+        <input
+          type="radio"
+          class="btn-check leaderboard-btn"
+          name="leaderboard-type"
+          id="teams"
+          autocomplete="off"
+        />
+        <label class="btn btn-outline-primary" for="teams">Teams</label>
+
+        <div class="btn-group" role="group">
+          <button
+            id="countPerPage"
+            type="button"
+            class="btn btn-primary dropdown-toggle"
+            data-bs-toggle="dropdown"
+            aria-expanded="false"
+          >
+            Per Page
+          </button>
+          <ul class="dropdown-menu" aria-labelledby="countPerPage">
+            <li>
+              <a class="dropdown-item leaderboard-btn" data-value="10">10</a>
+            </li>
+            <li>
+              <a class="dropdown-item leaderboard-btn" data-value="20">20</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+      <!-- leaderboard table -->
       <table class="table">
-        <thead>
-          <tr>
-            <th scope="col">#</th>
-            <th scope="col">Name</th>
-            <th scope="col">Team</th>
-            <th scope="col">KMs</th>
-          </tr>
-        </thead>
+        <thead></thead>
         <tbody></tbody>
       </table>
+      <!-- leaderboard pagination btns -->
       <nav
         aria-label="Page navigation"
         class="my-5 row justify-content-between"

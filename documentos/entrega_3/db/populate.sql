@@ -360,7 +360,6 @@ INSERT INTO users (usr_name, usr_email, usr_password, usr_country_id, usr_score)
 
 -- insert teams
 insert into teams (tea_name, tea_description, tea_score) values ('Elite Runners', '...', 1438);
-INSERT INTO teams (tea_name, tea_description, tea_score) VALUES ('Elite Runners', '...', 1250);
 INSERT INTO teams (tea_name, tea_description, tea_score) VALUES ('Crystal Mammoth Squad', '...', 796);
 INSERT INTO teams (tea_name, tea_description, tea_score) VALUES ('Brass Skull Riders', '...', 502);
 INSERT INTO teams (tea_name, tea_description, tea_score) VALUES ('Demon Saber Clan', '...', 387);
@@ -370,7 +369,7 @@ INSERT INTO teams (tea_name, tea_description, tea_score) VALUES ('Bronze Serpent
 INSERT INTO teams (tea_name, tea_description, tea_score) VALUES ('Scarlet Moth Riders', '...', 682);
 INSERT INTO teams (tea_name, tea_description, tea_score) VALUES ('Razor Crew', '...', 417);
 INSERT INTO teams (tea_name, tea_description, tea_score) VALUES ('Diamond Owl Riders', '...', 264);
-
+INSERT INTO teams (tea_name, tea_description, tea_score) VALUES ('Black Wolf Squad', '...', 816);
 
 
 -- team members
@@ -430,6 +429,12 @@ insert into team_members (tme_tea_id, tme_usr_id) values (10, 54);
 insert into team_members (tme_tea_id, tme_usr_id) values (10, 55);
 insert into team_members (tme_tea_id, tme_usr_id) values (10, 56);
 insert into team_members (tme_tea_id, tme_usr_id) values (10, 57);
+insert into team_members (tme_tea_id, tme_usr_id, tme_is_admin) values (11, 58, true);
+insert into team_members (tme_tea_id, tme_usr_id) values (11, 59);
+insert into team_members (tme_tea_id, tme_usr_id) values (11, 60);
+insert into team_members (tme_tea_id, tme_usr_id) values (11, 61);
+insert into team_members (tme_tea_id, tme_usr_id) values (11, 62);
+insert into team_members (tme_tea_id, tme_usr_id) values (11, 63);
 
 
 commit;
