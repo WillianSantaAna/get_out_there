@@ -9,7 +9,8 @@ router.get("/", async (req, res) => {
 });
 
 router.get("/leaderboard", async (req, res) => {
-  const { status, result } = await userModel.getUsersLeaderboard();
+  const { page, count } = req.query;
+  const { status, result } = await userModel.getUsersLeaderboard(count, page);
 
   res.status(status).send(result);
 });
@@ -70,13 +71,13 @@ router.delete("/:userId/circuits/:circuitId", async (req, res) => {
 });
 
 router.get("/:id/schedule", async (req, res) => {
-  const id = req.params.id
+  const id = req.params.id;
   const { status, result } = await userModel.getScheduledCircuits(id);
 
   res.status(status).send(result);
 });
 
-router.post("/:id/schedule", async (req,res) => {
+router.post("/:id/schedule", async (req, res) => {
   const id = req.params.id;
   const data = req.body;
   const { status, result } = await userModel.addScheduledCircuit(id, data);
@@ -93,8 +94,9 @@ router.put("/:uid/schedule/:sid", async (req, res) => {
 });
 
 router.get("/:id/schedule/calendar", async (req, res) => {
-  const id = req.params.id
-  const { status, result } = await userModel.getScheduledCircuitsAsCalendarEvents(id);
+  const id = req.params.id;
+  const { status, result } =
+    await userModel.getScheduledCircuitsAsCalendarEvents(id);
 
   res.status(status).send(result);
 });

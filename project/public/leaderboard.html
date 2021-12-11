@@ -114,17 +114,34 @@
           </section>
         </section>
       </section>
-      <table class="table table-striped">
+      <nav class="my-5 justify-content-between d-flex">
+        <section class="col-3 col-md-2 col-lg-1">
+          <select class="form-select count">
+            <option value="10">10</option>
+            <option value="20">20</option>
+          </select>
+        </section>
+        <section class="">
+          <input type="button" class="btn btn-primary col" value="Teams" />
+        </section>
+      </nav>
+      <table class="table">
         <thead>
           <tr>
             <th scope="col">#</th>
             <th scope="col">Name</th>
             <th scope="col">Team</th>
-            <th scope="col">Score</th>
+            <th scope="col">KMs</th>
           </tr>
         </thead>
         <tbody></tbody>
       </table>
+      <nav
+        aria-label="Page navigation"
+        class="my-5 row justify-content-between"
+      >
+        <ul class="pagination justify-content-center col d-flex flex-wrap"></ul>
+      </nav>
     </main>
     <!-- Footer -->
     <footer class="dark">

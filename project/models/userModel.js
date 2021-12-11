@@ -16,15 +16,26 @@ module.exports.getAllUsers = async () => {
   }
 };
 
-module.exports.getUsersLeaderboard = async () => {
+module.exports.getUsersLeaderboard = async (count = 10, page = 0) => {
   try {
-    const sql = `SELECT usr.usr_name, usr.usr_score, tea.tea_name
-	    FROM users AS usr, team_members AS tme, teams AS tea
-	    WHERE tme.tme_usr_id = usr.usr_id AND tme.tme_tea_id = tea.tea_id AND tme.tme_active = true
-	    ORDER BY usr.usr_score DESC`;
+    const count_sql = `SELECT COUNT(*) AS total_count FROM users;`;
+    const users_sql = `SELECT usr.usr_id, usr.usr_name, usr.usr_score, tea.tea_name
+	      FROM users AS usr
+        LEFT JOIN team_members AS tme ON tme.tme_usr_id = usr.usr_id AND tme.tme_active = true
+        LEFT JOIN teams AS tea ON tea.tea_id = tme.tme_tea_id
+	      ORDER BY usr.usr_score DESC
+		    LIMIT $1
+		    OFFSET $2;`;
 
-    let result = await pool.query(sql);
-    result = result.rows;
+    let count_result = await pool.query(count_sql);
+    let users_result = await pool.query(users_sql, [count, count * page]);
+
+    const result = {
+      totalCount: count_result.rows[0].total_count,
+      users: users_result.rows,
+      totalPages: Math.ceil(count_result.rows[0].total_count / count),
+      currentPage: parseInt(page),
+    };
 
     return { status: 200, result };
   } catch (error) {
@@ -95,10 +106,10 @@ module.exports.addUser = async (user) => {
 module.exports.login = async (user) => {
   try {
     const { email, password } = user;
-    const sql = `SELECT usr.usr_id, usr.usr_name, usr.usr_password, tea_id
+    const sql = `SELECT usr.usr_id, usr.usr_name, usr.usr_password, tea.tea_id
     FROM users AS usr
-    FULL JOIN team_members AS tme ON usr.usr_id = tme.tme_usr_id AND tme.tme_active = true
-    FULL JOIN teams AS tea ON tme.tme_tea_id = tea.tea_id
+    LEFT JOIN team_members AS tme ON usr.usr_id = tme.tme_usr_id AND tme.tme_active = true
+    LEFT JOIN teams AS tea ON tme.tme_tea_id = tea.tea_id
     WHERE usr.usr_email = $1`;
 
     let result = await pool.query(sql, [email]);
@@ -220,14 +231,16 @@ module.exports.getScheduledCircuitsAsCalendarEvents = async function (id) {
 
     const circuits = await this.getUserCircuits(id);
     for (let uc of result) {
-      const cir_name = circuits.result.filter(c => c.cir_id == uc.uci_cir_id)[0].cir_name;
+      const cir_name = circuits.result.filter(
+        (c) => c.cir_id == uc.uci_cir_id
+      )[0].cir_name;
       events.push({
-        'title': cir_name,
-        'start': uc.uci_date,
-        'id': uc.uci_id,
+        title: cir_name,
+        start: uc.uci_date,
+        id: uc.uci_id,
         extendedProps: {
-          'circuitId': uc.uci_cir_id,
-        }        
+          circuitId: uc.uci_cir_id,
+        },
       });
     }
 
@@ -240,46 +253,51 @@ module.exports.getScheduledCircuitsAsCalendarEvents = async function (id) {
 module.exports.addScheduledCircuit = async function (id, data) {
   let dt = new Date(data.datetime);
   if (dt > new Date()) {
-    const dtformat = `${dt.getFullYear()}-${dt.getMonth()+1}-${dt.getDate()} ${dt.getHours()}:${dt.getMinutes()}:00`;
+    const dtformat = `${dt.getFullYear()}-${
+      dt.getMonth() + 1
+    }-${dt.getDate()} ${dt.getHours()}:${dt.getMinutes()}:00`;
     const cid = parseInt(data.circuit_id);
     const uid = parseInt(id);
-  
+
     if (typeof dtformat != "string") {
       return { status: 400, result: { msg: "Malformed data" } };
     }
-  
+
     if (typeof uid != "number" || uid <= 0) {
       return { status: 400, result: { msg: "Malformed data" } };
     }
-  
+
     if (typeof cid != "number" || cid <= 0) {
       return { status: 400, result: { msg: "Malformed data" } };
     }
-  
+
     try {
       const sql = `INSERT INTO user_circuits(uci_cir_id, uci_usr_id, uci_date) VALUES ($1, $2, timestamp '${dtformat}');`;
       let res = await pool.query(sql, [cid, uid]);
       result = res.rows[0];
-  
+
       return { status: 200, result: result };
     } catch (error) {
       console.log(error);
       return { status: 500, result: error };
     }
   } else {
-    return { status: 400, result: `cannot schedule circuit for a past date (${dt})`};
+    return {
+      status: 400,
+      result: `cannot schedule circuit for a past date (${dt})`,
+    };
   }
 };
 
 module.exports.removeScheduledCircuit = async function (userId, scheduleId) {
   const uid = parseInt(userId);
   const sid = parseInt(scheduleId);
-  
-  try {  
+
+  try {
     const sql = `UPDATE user_circuits SET uci_active = false WHERE uci_id = $1 AND uci_usr_id = $2;`;
-    
+
     let result = await pool.query(sql, [sid, uid]);
-    
+
     if (result.rowCount > 0) {
       return { status: 200, result };
     } else {
