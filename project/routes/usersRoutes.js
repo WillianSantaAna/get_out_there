@@ -128,10 +128,9 @@ router.put("/:userId/schedule/:scheduleId/complete", async (req, res) => {
   res.status(status).send(result);
 });
 
-router.get("/:id/schedule/calendar", async (req, res) => {
+router.get("/:id/calendar", async (req, res) => {
   const id = req.params.id;
-  const { status, result } =
-    await userModel.getScheduledCircuitsAsCalendarEvents(id);
+  const { status, result } = await userModel.getScheduledCircuitsAsCalendarEvents(id);
 
   res.status(status).send(result);
 });

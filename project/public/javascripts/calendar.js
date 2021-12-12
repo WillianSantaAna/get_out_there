@@ -39,7 +39,7 @@ document.addEventListener('DOMContentLoaded', function () {
     height: 'auto',
 
     // Fullcalendar requires a prepared JSON feed to display events
-    events: `/api/users/${user.usr_id}/schedule/calendar`,
+    events: `/api/users/${user.usr_id}/calendar`,
     eventStartEditable: true,
 
     // Cannot use async/await here, so interactions trigger modals that trigger calls
@@ -70,8 +70,8 @@ document.addEventListener('DOMContentLoaded', function () {
       html += `<a href="#" class="btn las la-trash fs-2 main-white bg-danger my-2 unschedule" data-bs-toggle="tooltip" title="Unschedule" style="border-radius: 10px" onclick="return false;" data-id="${info.event.id}"></a>`
       document.querySelector('#event-modal-footer').innerHTML = html;
 
-      $("#run-schedule").on("click", runCircuit);
-      $("#unschedule").on("click", unschedule);
+      $(".run-schedule").on("click", runCircuit);
+      $(".unschedule").on("click", unschedule);
 
       $('#event-modal').modal('show');
     },

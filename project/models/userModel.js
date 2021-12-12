@@ -235,22 +235,17 @@ module.exports.getUserScheduledById = async function (userId, scheduleId) {
   }
 };
 
-module.exports.getScheduledCircuitsAsCalendarEvents = async function (id) {
+module.exports.getScheduledCircuitsAsCalendarEvents = async (id) => {
   try {
-    const sql =
-      "SELECT * FROM user_circuits WHERE uci_usr_id = $1 AND uci_completed = false AND uci_active = true AND uci_date >= NOW() - INTERVAL '1 DAY' ORDER BY uci_date ASC;";
+    const sql = "SELECT uci_id, uci_date, cir_name FROM user_circuits INNER JOIN circuits ON uci_cir_id = cir_id AND uci_usr_id = $1 AND uci_completed = false AND uci_active = true AND uci_date >= NOW() - INTERVAL '1 DAY' ORDER BY uci_date ASC;";
     let result = await pool.query(sql, [id]);
 
     result = result.rows;
     let events = [];
 
-    const circuits = await this.getUserCircuits(id);
     for (let uc of result) {
-      const cir_name = circuits.result.filter(
-        (c) => c.cir_id == uc.uci_cir_id
-      )[0].cir_name;
       events.push({
-        title: cir_name,
+        title: uc.cir_name,
         start: uc.uci_date,
         id: uc.uci_id,
       });
