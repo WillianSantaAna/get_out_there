@@ -220,6 +220,21 @@ module.exports.getScheduledCircuits = async function (id) {
   }
 };
 
+module.exports.getUserScheduledById = async function (userId, scheduleId) {
+  try {
+    const sql = `SELECT * FROM user_circuits AS uci 
+      INNER JOIN circuits AS cir ON uci.uci_cir_id = cir.cir_id
+      WHERE uci.uci_usr_id = $1 AND uci.uci_id = $2 AND uci_completed = false AND uci_active = true`;
+    let result = await pool.query(sql, [userId, scheduleId]);
+
+    result = result.rows[0];
+
+    return { status: 200, result: result };
+  } catch (error) {
+    return { status: 500, result: error };
+  }
+};
+
 module.exports.getScheduledCircuitsAsCalendarEvents = async function (id) {
   try {
     const sql =
@@ -250,7 +265,9 @@ module.exports.getScheduledCircuitsAsCalendarEvents = async function (id) {
 module.exports.scheduleUserCircuit = async function (id, data) {
   let dt = new Date(data.datetime);
   if (dt > new Date()) {
-    const dtformat = `${dt.getFullYear()}-${dt.getMonth() + 1}-${dt.getDate()} ${dt.getHours()}:${dt.getMinutes()}:00`;
+    const dtformat = `${dt.getFullYear()}-${
+      dt.getMonth() + 1
+    }-${dt.getDate()} ${dt.getHours()}:${dt.getMinutes()}:00`;
     const cid = parseInt(data.circuit_id);
     const uid = parseInt(id);
 
@@ -277,15 +294,23 @@ module.exports.scheduleUserCircuit = async function (id, data) {
       return { status: 500, result: error };
     }
   } else {
-    return { status: 400, result: { msg: `cannot schedule circuit for a past date (${dt})` } };
+    return {
+      status: 400,
+      result: { msg: `cannot schedule circuit for a past date (${dt})` },
+    };
   }
 };
 
-module.exports.rescheduleUserCircuit = async function (userId, scheduleId, data) {
+module.exports.rescheduleUserCircuit = async function (
+  userId,
+  scheduleId,
+  data
+) {
   let dt = new Date(data.newdatetime);
   if (dt > new Date()) {
-
-    const dtformat = `${dt.getFullYear()}-${dt.getMonth() + 1}-${dt.getDate()} ${dt.getHours()}:${dt.getMinutes()}:00`;
+    const dtformat = `${dt.getFullYear()}-${
+      dt.getMonth() + 1
+    }-${dt.getDate()} ${dt.getHours()}:${dt.getMinutes()}:00`;
     const uid = parseInt(userId);
     const sid = parseInt(scheduleId);
 
@@ -312,7 +337,10 @@ module.exports.rescheduleUserCircuit = async function (userId, scheduleId, data)
       return { status: 500, result: error };
     }
   } else {
-    return { status: 400, result: { msg: `cannot schedule circuit for a past date (${dt})` } };
+    return {
+      status: 400,
+      result: { msg: `cannot schedule circuit for a past date (${dt})` },
+    };
   }
 };
 
@@ -331,6 +359,26 @@ module.exports.unscheduleUserCircuit = async function (userId, scheduleId) {
       return {
         status: 404,
         result: `User with id ${uid} and user_schedule id ${sid} not found`,
+      };
+    }
+  } catch (error) {
+    console.log(error);
+    return { status: 500, result: error };
+  }
+};
+
+module.exports.completeUserCircuit = async function (userId, scheduleId) {
+  try {
+    const sql = `UPDATE user_circuits SET uci_completed = true WHERE uci_usr_id = $1 AND uci_id = $2;`;
+
+    let result = await pool.query(sql, [userId, scheduleId]);
+
+    if (result.rowCount > 0) {
+      return { status: 200, result };
+    } else {
+      return {
+        status: 404,
+        result: `User with id ${userId} and user_schedule id ${scheduleId} not found`,
       };
     }
   } catch (error) {

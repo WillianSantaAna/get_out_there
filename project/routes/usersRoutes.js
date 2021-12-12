@@ -77,6 +77,17 @@ router.get("/:id/schedule", async (req, res) => {
   res.status(status).send(result);
 });
 
+router.get("/:userId/schedule/:scheduleId", async (req, res) => {
+  const userId = req.params.userId;
+  const scheduleId = req.params.scheduleId;
+  const { status, result } = await userModel.getUserScheduledById(
+    userId,
+    scheduleId
+  );
+
+  res.status(status).send(result);
+});
+
 router.post("/:id/schedule", async (req, res) => {
   const id = req.params.id;
   const data = req.body;
@@ -89,7 +100,11 @@ router.put("/:uid/schedule/:sid", async (req, res) => {
   const uid = req.params.uid;
   const sid = req.params.sid;
   const data = req.body;
-  const { status, result } = await userModel.rescheduleUserCircuit(uid, sid, data);
+  const { status, result } = await userModel.rescheduleUserCircuit(
+    uid,
+    sid,
+    data
+  );
 
   res.status(status).send(result);
 });
@@ -98,6 +113,17 @@ router.delete("/:uid/schedule/:sid", async (req, res) => {
   const uid = req.params.uid;
   const sid = req.params.sid;
   const { status, result } = await userModel.unscheduleUserCircuit(uid, sid);
+
+  res.status(status).send(result);
+});
+
+router.put("/:userId/schedule/:scheduleId/complete", async (req, res) => {
+  const userId = req.params.userId;
+  const scheduleId = req.params.scheduleId;
+  const { status, result } = await userModel.completeUserCircuit(
+    userId,
+    scheduleId
+  );
 
   res.status(status).send(result);
 });

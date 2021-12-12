@@ -5,6 +5,7 @@ import {
 import {
   addCircuit,
   getUserCircuits,
+  getUserScheduledById,
   removeUserCircuit,
 } from "./src/apiMethods.js";
 import {
@@ -34,11 +35,31 @@ window.onload = async () => {
   $(".save").hide();
   $(".start").hide();
 
+  localStorage.removeItem("activeUserCircuit");
+  localStorage.removeItem("activeTeamCircuit");
+
   const teamCircuit = JSON.parse(localStorage.getItem("teamCircuit"));
+  const userScheduleId = JSON.parse(localStorage.getItem("userCircuit"));
 
   if (teamCircuit) {
+    localStorage.removeItem("teamCircuit");
+    localStorage.removeItem("activeUserCircuit");
+    localStorage.setItem("activeTeamCircuit", JSON.stringify(teamCircuit));
+
     setTimeout(() => {
       drawRoute(teamCircuit.cir_coords);
+    }, 1000);
+  }
+
+  if (userScheduleId) {
+    const userSchedule = await getUserScheduledById(userScheduleId);
+
+    localStorage.removeItem("userCircuit");
+    localStorage.removeItem("activeTeamCircuit");
+    localStorage.setItem("activeUserCircuit", JSON.stringify(userSchedule));
+
+    setTimeout(async () => {
+      drawRoute(userSchedule.cir_coords);
     }, 1000);
   }
 };

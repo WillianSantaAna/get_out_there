@@ -1,4 +1,9 @@
-import { getCircuit, addUserScore, addTeamScore } from "./apiMethods.js";
+import {
+  getCircuit,
+  addUserScore,
+  addTeamScore,
+  completeUserCircuit,
+} from "./apiMethods.js";
 import { getLocalStorageUser } from "./setElements.js";
 
 L.mapquest.key = "AvxrKxXdAUzYbKny0oFxLy3v7RjndtkW";
@@ -25,7 +30,6 @@ function clearMarker() {
   $(".route").show();
 
   clearInterval(intervalId);
-  localStorage.removeItem("teamCircuit");
 
   if (directions.directionsRequest) {
     map.remove();
@@ -97,16 +101,22 @@ function startRunning() {
 
         const { usr_id, tea_id } = getLocalStorageUser();
         const userScore = await addUserScore(usr_id, distance);
-        console.log(`userScore`, userScore);
 
         result += `<p>You won ${userScore.received_score}KMs and now have ${userScore.usr_score}KMs</p>`;
 
-        if (tea_id && localStorage.getItem("teamCircuit")) {
+        if (localStorage.getItem("activeUserCircuit")) {
+          const { uci_id } = JSON.parse(
+            localStorage.getItem("activeUserCircuit")
+          );
+          await completeUserCircuit(uci_id);
+          localStorage.removeItem("activeUserCircuit");
+        }
+
+        if (tea_id && localStorage.getItem("activeTeamCircuit")) {
           const teamScore = await addTeamScore(tea_id, distance);
-          console.log(`teamScore`, teamScore);
 
           result += `<p>You team won ${teamScore.received_score}KMs and now have ${teamScore.tea_score}KMs</p>`;
-          localStorage.removeItem("teamCircuit");
+          localStorage.removeItem("activeTeamCircuit");
         }
 
         $(".finish-circuit-result").html(result);
