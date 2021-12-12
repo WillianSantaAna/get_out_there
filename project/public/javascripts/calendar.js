@@ -30,14 +30,19 @@ window.onload = async function () {
   }
 }
 
+// Calendar creation & functionality definition
 document.addEventListener('DOMContentLoaded', function () {
   const user = getLocalStorageUser();
   var calendarEl = document.getElementById('calendar');
   var calendar = new FullCalendar.Calendar(calendarEl, {
     initialView: 'dayGridMonth',
     height: 'auto',
+
+    // Fullcalendar requires a prepared JSON feed to display events
     events: `/api/users/${user.usr_id}/schedule/calendar`,
     eventStartEditable: true,
+
+    // Cannot use async/await here, so interactions trigger modals that trigger calls
 
     dateClick: function (info) {
       let dt = new Date();

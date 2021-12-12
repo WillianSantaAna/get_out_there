@@ -21,6 +21,9 @@
   <!-- jquery -->
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"
     integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+  <!-- mapquest -->
+  <script src="https://api.mqcdn.com/sdk/mapquest-js/v1.3.2/mapquest.js"></script>
+  <link type="text/css" rel="stylesheet" href="https://api.mqcdn.com/sdk/mapquest-js/v1.3.2/mapquest.css" />
   <!-- styles -->
   <link rel="stylesheet" href="./stylesheets/style.css" />
   <!-- javascript -->
@@ -103,7 +106,7 @@
       </section>
     </section>
 
-    <!-- Route modal -->
+    <!-- Circuit view modal -->
     <section class="modal fade" id="route-modal" tabindex="-1" role="dialog" aria-labelledby="route-modal-label"
       aria-hidden="true">
       <section class="modal-dialog modal-dialog-centered" role="document">
@@ -112,7 +115,7 @@
             <h5 class="modal-title" id="route-modal-label"></h5>
           </section>
           <section class="modal-body">
-            <p>Map goes here</p>
+            <section id="map" style="width: 100%; height: 250px;"></section>
           </section>
         </section>
       </section>

@@ -10,9 +10,14 @@ import {
   scheduleUserCircuit,
   rescheduleUserCircuit,
   unscheduleUserCircuit,
+  getCircuit,
 } from "./src/apiMethods.js";
 
 $("#sign-out").on("click", () => { removeLocalStorageUser() });
+
+$("#route-modal").on("shown.bs.modal", function () {
+  window.dispatchEvent(new Event("resize"));
+});
 
 window.onload = async function () {
   const user = getLocalStorageUser();
@@ -20,6 +25,7 @@ window.onload = async function () {
     setNavbarAndFooter();
     fillCircuitSelectEl();
     showScheduledCircuits();
+    createMap();
     $("#submit").on("click", () => { submit() });
   } else {
     window.location.replace("/");
@@ -52,6 +58,7 @@ async function showScheduledCircuits() {
               <p class="card-text fs-5 my-1">${uc.cir_name}</p>
               <p class="card-text my-1">Set for ${dtformat}</p>
               <section class="d-flex">
+                <a href="#" class="btn las la-route fs-2 main-white bg-success my-2 me-3 view-circuit" data-bs-toggle="tooltip" title="View circuit" style="border-radius: 10px;" onclick="return false;" data-id="${uc.cir_id}" data-name="${uc.cir_name}"></a>                
                 <a href="#" class="btn las la-calendar fs-2 main-white bg-primary my-2 me-3 reschedule" data-bs-toggle="tooltip" title="Reschedule" style="white-space: nowrap; border-radius: 10px;" onclick="return false;" data-id="${uc.uci_id}" data-date="${dtformat}"></a>
                 <a href="#" class="btn las la-trash fs-2 me-auto main-white bg-danger my-2 unschedule" data-bs-toggle="tooltip" title="Unschedule" style="border-radius: 10px" onclick="return false;" data-id="${uc.uci_id}"></a>`
                 if (diffDays >= 0 && diffDays <= 1) // if up to 1 day has passed since the scheduled time, you may run
@@ -66,7 +73,7 @@ async function showScheduledCircuits() {
     html += '</section>';
     document.querySelector("#schedule").innerHTML = html;
   
-    //$(".route").on("click", viewCircuit);
+    $(".view-circuit").on("click", viewCircuit);
     $(".reschedule").on("click", showRescheduleModal);
     $(".unschedule").on("click", unschedule);
     $(".run-schedule").on("click", runCircuit);
@@ -78,6 +85,8 @@ async function showScheduledCircuits() {
     document.querySelector("#schedule").innerHTML = html;
   }
 }
+
+/*----- Scheduling, Running -----*/
 
 async function submit() {
   const datetime = document.getElementById("input-datetime").value;
@@ -151,17 +160,20 @@ async function unschedule(e) {
   }
 }
 
-/*
-async function viewCircuit(e) {
-  document.querySelector('#route-modal-label').innerHTML = e.currentTarget.dataset.name;
-  // TODO 
-  // HTML button: <a href="#" class="btn las la-route fs-2 main-white bg-success my-2 me-3 route" style="border-radius: 10px" onclick="return false;" data-id="${uc.cir_id}" data-name="${uc.cir_name}"></a>                
-  $("#route-modal").modal('show');
-}
-*/
-
 async function runCircuit(e) {
   const sid = e.currentTarget.dataset.id;
   localStorage.setItem("userCircuit", sid);
   window.location.replace("/circuit.html");
+}
+
+/*----- Viewing a circuit -----*/
+import {
+  createMap,
+  retrieveRoute,
+} from "./src/mapquest.js";
+
+async function viewCircuit(e) {
+  document.querySelector('#route-modal-label').innerHTML = e.currentTarget.dataset.name;
+  retrieveRoute(e);
+  $("#route-modal").modal('show');
 }
