@@ -21,8 +21,9 @@ window.onload = async function () {
 
     $("#submit").on("click", () => { submit() });
 
-    $('#myModal').on('hidden.bs.modal', function (e) {
+    $('#reschedule-modal').on('hidden.bs.modal', function (e) {
       selected_date = null;
+      window.location.reload();
     })
   } else {
     window.location.replace("/");
@@ -60,8 +61,8 @@ document.addEventListener('DOMContentLoaded', function () {
       const dt = new Date(info.event.start);
       const diffDays = ((new Date() - dt) / (1000 * 60 * 60 * 24));
       if (diffDays >= 0 && diffDays <= 1)
-        html = `<a href="#" id="run-schedule" class="btn btn-success my-2 me-2" data-id="${info.event.id}">Run</a>`
-      html += `<a href="#" id="unschedule" class="btn btn-danger my-2" onclick="return false;" data-id="${info.event.id}">Unschedule</a>`
+        html = `<a href="#" class="btn las la-running fs-2 main-white main-blue-bg my-2 run-schedule" data-bs-toggle="tooltip" title="Run" style="border-radius: 10px" onclick="return false;" data-id="${info.event.id}"></a>`
+      html += `<a href="#" class="btn las la-trash fs-2 main-white bg-danger my-2 unschedule" data-bs-toggle="tooltip" title="Unschedule" style="border-radius: 10px" onclick="return false;" data-id="${info.event.id}"></a>`
       document.querySelector('#event-modal-footer').innerHTML = html;
 
       $("#run-schedule").on("click", runCircuit);
@@ -94,6 +95,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
   calendar.render();
 });
+
 
 async function fillCircuitSelectEl() {
   const user = getLocalStorageUser();

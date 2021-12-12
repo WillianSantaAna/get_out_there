@@ -209,7 +209,7 @@ module.exports.removeUserCircuit = async (userId, circuitId) => {
 module.exports.getScheduledCircuits = async function (id) {
   try {
     const sql =
-      "SELECT * FROM user_circuits WHERE uci_usr_id = $1 AND uci_completed = false AND uci_active = true AND uci_date >= NOW() - INTERVAL '1 DAY' ORDER BY uci_date ASC;";
+      "SELECT uci_id, uci_date, cir_id, cir_name FROM user_circuits INNER JOIN circuits ON uci_cir_id = cir_id AND uci_usr_id = $1 AND uci_completed = false AND uci_active = true AND uci_date >= NOW() - INTERVAL '1 DAY' ORDER BY uci_date ASC;";
     let result = await pool.query(sql, [id]);
 
     result = result.rows;
@@ -277,7 +277,7 @@ module.exports.scheduleUserCircuit = async function (id, data) {
       return { status: 500, result: error };
     }
   } else {
-    return { status: 400, result: { msg: `cannot schedule circuit for a past date (${dt})`} };
+    return { status: 400, result: { msg: `cannot schedule circuit for a past date (${dt})` } };
   }
 };
 
@@ -312,7 +312,7 @@ module.exports.rescheduleUserCircuit = async function (userId, scheduleId, data)
       return { status: 500, result: error };
     }
   } else {
-    return { status: 400, result: { msg: `cannot schedule circuit for a past date (${dt})`} };
+    return { status: 400, result: { msg: `cannot schedule circuit for a past date (${dt})` } };
   }
 };
 
