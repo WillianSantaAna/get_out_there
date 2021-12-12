@@ -308,12 +308,12 @@ module.exports.joinTeam = async (userId, invitationCode) => {
           return { status: 400, result: deactivateCodeResult };
         }
       } else {
-        return { status: 404, result: "Invitation code is already used" };
+        return { status: 404, result: {msg: "Invitation code is already used"} };
       }
     } else {
       return {
         status: 404,
-        result: `Invite with code ${invitationCode} not found`,
+        result: {msg: `Invite with code ${invitationCode} not found`},
       };
     }
   } catch (error) {
@@ -335,7 +335,7 @@ module.exports.promoteMember = async (teamId, data) => {
     } else {
       return {
         status: 404,
-        result: `Member with team member id ${id} not found`,
+        result: {msg:`Member with team member id ${id} not found`},
       };
     }
   } catch (error) {
@@ -356,7 +356,7 @@ module.exports.kickMember = async (id) => {
     } else {
       return {
         status: 404,
-        result: `Member with team member id ${id} not found`,
+        result: {msg:`Member with team member id ${id} not found`},
       };
     }
   } catch (error) {
