@@ -95,6 +95,7 @@ window.onload = async () => {
         }
 
         await setTeamSchedules(user.tea_id);
+        await setTeamCircuits(user.tea_id);
       } catch (error) {
         console.log(error);
       }
@@ -164,19 +165,7 @@ window.onload = async () => {
         }
       });
 
-      $(".run-schedule").on("click", async (e) => {
-        try {
-          let scheduleId = e.currentTarget.getAttribute("data-id");
-
-          const result = await getTeamSchedule(user.tea_id, scheduleId);
-
-          localStorage.setItem("teamCircuit", JSON.stringify(result));
-
-          window.location.replace("/circuit.html");
-        } catch (error) {
-          console.log(error);
-        }
-      });
+      setRumScheduleEvent(user);
 
       $(".clear").on("click", clearMarker);
 
@@ -207,6 +196,8 @@ window.onload = async () => {
 
             await setTeamCircuits(user.tea_id);
 
+            setRumScheduleEvent(user)
+
             alert(result.msg);
           } else {
             alert("Circuit date can't be empty");
@@ -222,6 +213,22 @@ window.onload = async () => {
     window.location.replace("/");
   }
 };
+
+function setRumScheduleEvent(user) {
+  $(".run-schedule").on("click", async (e) => {
+    try {
+      let scheduleId = e.currentTarget.getAttribute("data-id");
+
+      const result = await getTeamSchedule(user.tea_id, scheduleId);
+
+      localStorage.setItem("teamCircuit", JSON.stringify(result));
+
+      window.location.replace("/circuit.html");
+    } catch (error) {
+      console.log(error);
+    }
+  });
+}
 
 async function setTeamSchedules(teamId) {
   const schedules = await getTeamSchedules(teamId);
